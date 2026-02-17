@@ -16,6 +16,7 @@ Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14
 - [Script Reference](#script-reference)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Usage](#advanced-usage)
+- [Measured Results (2026-02-17)](#measured-results-2026-02-17)
 
 ---
 
@@ -734,6 +735,90 @@ quants_to_test=("Q4_K_M")  # Only test Q4
 ### Parallel Benchmarking
 
 **DO NOT** run multiple benchmarks simultaneously - GPU contention will skew results. Run sequentially.
+
+---
+
+## Measured Results (2026-02-17)
+
+This section records real benchmark output from this project on the test machine.
+
+- **Benchmark report timestamp**: 2026-02-17 12:31:50
+- **Source files**:
+  - `benchmark_report.html`
+  - `SYSTEM_INFO.md`
+- **Benchmark mode**: `run_benchmark.sh` (llama-bench, 3 repetitions)
+
+### System Overview (Test Bench)
+
+| Component | Value |
+|----------|-------|
+| **OS** | Ubuntu 24.04.4 LTS |
+| **Kernel** | 6.17.0-14-generic |
+| **ROCm** | 7.2.0 |
+| **Docker** | 29.2.1 |
+| **Python** | 3.12.3 |
+| **CPU** | Intel Core Ultra 7 265K |
+| **CPU Cores** | 20 |
+| **CPU Boost** | Up to 5.6 GHz |
+| **CPU Cache** | 30MB L3 |
+| **GPU (Primary AI Accelerator)** | ASUS TURBO Radeon AI PRO R9700 |
+| **GPU Architecture** | RDNA4 (`gfx1201`) |
+| **GPU VRAM** | 32GB GDDR |
+| **GPU Driver** | amdgpu 6.18.4 |
+| **PCIe Link** | 32.0GT/s x16 |
+| **GPU Max Power** | 300W |
+| **ROCm GPU Support** | Native `gfx1201` support |
+| **Memory** | 46GB DDR5 |
+| **DIMM Configuration** | 2 x 24GB DDR5-8200 |
+| **Memory Speed (running)** | 6400 MT/s |
+| **Storage** | WDC PC SN810 NVMe 512GB |
+| **Inference Backend** | llama.cpp HIP backend |
+| **PyTorch Stack** | PyTorch 2.9.1 ROCm |
+| **HSA Override** | Not required |
+| **Benchmark repetitions** | 3 per configuration |
+
+### Social Badge Text
+
+Use this block for image/footer overlays:
+
+```text
+Powered By
+AMD Radeon AI PRO R9700 32GB
+Intel Core Ultra 7 265K
+46GB DDR5
+ROCm 7.2 + llama.cpp HIP
+```
+
+### Headline Performance
+
+- **Peak Prompt Processing (PP 512)**: **8124.8 tok/s**  
+  `Qwen2.5-3B-Instruct` + `Q4_K_M`
+- **Peak Text Generation (TG 128)**: **143.4 tok/s**  
+  `Qwen2.5-3B-Instruct` + `Q4_K_M`
+
+### TG 128 Comparison (tok/s)
+
+| Model | Q4_K_M | Q5_K_M | Q8_0 |
+|------|--------|--------|------|
+| **Qwen2.5-3B** | 143.4 | 137.0 | 113.0 |
+| **Qwen2.5-7B** | 103.7 | 93.3 | 69.5 |
+| **Qwen2.5-14B** | 55.0 | 49.3 | 36.2 |
+| **Qwen2.5-32B** | 26.8 | 23.7 | N/A (skipped; VRAM limit) |
+
+### PP 512 Comparison (tok/s)
+
+| Model | Q4_K_M | Q5_K_M | Q8_0 |
+|------|--------|--------|------|
+| **Qwen2.5-3B** | 8124.8 | 7737.2 | 3042.0 |
+| **Qwen2.5-7B** | 4006.1 | 3040.4 | 1392.6 |
+| **Qwen2.5-14B** | 2007.7 | 1887.9 | 685.6 |
+| **Qwen2.5-32B** | 901.6 | 854.2 | N/A (skipped; VRAM limit) |
+
+### Notes
+
+- For this machine and configuration, `Q4_K_M` was fastest across all tested sizes.
+- `Q8_0` gave lower throughput and, for 32B, did not fit the 32 GB VRAM limit used by the benchmark logic.
+- Results are specific to this system, ROCm version, llama.cpp build, and benchmark settings.
 
 ---
 
