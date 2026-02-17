@@ -1,4 +1,4 @@
-# Qwen2.5 GGUF Benchmark Suite for AMD Radeon AI PRO R9700
+# Qwen2.5 GGUF Benchmark Suite for ASUS TURBO Radeon AI PRO R9700
 
 Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on AMD's RDNA4 GPU using ROCm and llama.cpp.
 
@@ -22,7 +22,7 @@ Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14
 
 ## Overview
 
-This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the AMD Radeon AI PRO R9700 can:
+This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the ASUS TURBO Radeon AI PRO R9700 can:
 
 1. **Process input prompts** (Prompt Processing / PP) - How quickly the model reads and understands your input
 2. **Generate output tokens** (Text Generation / TG) - How quickly the model writes responses
@@ -41,7 +41,7 @@ The suite automatically:
 
 | Component | Specification |
 |-----------|---------------|
-| **GPU** | AMD Radeon AI PRO R9700 |
+| **GPU** | ASUS TURBO Radeon AI PRO R9700 |
 | **Architecture** | RDNA4 (gfx1201) |
 | **VRAM** | 32 GB |
 | **CPU** | Intel Core Ultra 7 265K |
@@ -130,7 +130,7 @@ Context:           8192 tokens max
 2. **Verify llama.cpp** is built with ROCm
    ```bash
    /path/to/llama.cpp/build/bin/llama-bench --help
-   # Should show "found 1 ROCm devices: AMD Radeon AI PRO R9700"
+   # Should show "found 1 ROCm devices: ASUS TURBO Radeon AI PRO R9700"
    ```
 
 3. **Check Disk Space**
@@ -274,7 +274,7 @@ During the benchmark, you'll see:
     \__\_\ \_/\_/ \___|_| |_||____|___/  |____/ \___|_| |_|\_____|_| |_|
 
 ===============================================================================
-  GPU          AMD Radeon AI PRO R9700
+  GPU          ASUS TURBO Radeon AI PRO R9700
   Architecture RDNA4 (gfx1201)
   VRAM         32 GB
   ROCm         7.2
@@ -366,7 +366,7 @@ Structured format with metadata:
 ```json
 {
   "metadata": {
-    "gpu": "AMD Radeon AI PRO R9700",
+    "gpu": "ASUS TURBO Radeon AI PRO R9700",
     "arch": "gfx1201 (RDNA4)",
     "vram_gb": 32,
     "rocm_version": "7.2",
@@ -783,7 +783,7 @@ Use this block for image/footer overlays:
 
 ```text
 Powered By
-AMD Radeon AI PRO R9700 32GB
+ASUS TURBO Radeon AI PRO R9700 32GB
 Intel Core Ultra 7 265K
 46GB DDR5
 ROCm 7.2 + llama.cpp HIP
@@ -862,7 +862,7 @@ ROCm 7.2 + llama.cpp HIP
 
 ## Citation & Credits
 
-**GPU**: AMD Radeon AI PRO R9700 (RDNA4 / gfx1201)
+**GPU**: ASUS TURBO Radeon AI PRO R9700 (RDNA4 / gfx1201)
 **Models**: Qwen2.5-Instruct by Alibaba Cloud (Hugging Face: Qwen/Qwen2.5-{SIZE}-Instruct-GGUF)
 **Inference Engine**: llama.cpp by ggerganov (HIP/ROCm backend)
 **Compute Platform**: ROCm 7.2 by AMD
@@ -892,7 +892,7 @@ For issues or questions:
 
 ## Hardware Target
 
-- **GPU:** AMD Radeon AI PRO R9700 (RDNA4, gfx1201)
+- **GPU:** ASUS TURBO Radeon AI PRO R9700 (RDNA4, gfx1201)
 - **VRAM:** 32 GB
 - **Backend:** llama.cpp with HIP/ROCm 7.2
 
