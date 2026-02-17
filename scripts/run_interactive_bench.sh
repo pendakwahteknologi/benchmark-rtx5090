@@ -164,7 +164,9 @@ copy_model() {
     fi
 
     local file_size_gb
-    file_size_gb=$(awk "BEGIN {printf \"%.1f\", $(stat -c%s \"$src\") / 1073741824}")
+    local file_size_bytes
+    file_size_bytes=$(stat -c%s "$src" 2>/dev/null || echo 0)
+    file_size_gb=$(awk -v b="$file_size_bytes" 'BEGIN {printf "%.1f", b / 1073741824}')
     echo -ne "  ${YELLOW}COPYING${RESET}  $model_file ${DIM}(${file_size_gb} GB)${RESET} ... "
     logfile "[COPY] $model_file (${file_size_gb}GB) from USB drive"
     cp "$src" "$dest"
