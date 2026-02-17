@@ -746,6 +746,10 @@ This section records real benchmark output from this project on the test machine
 - **Source files**:
   - `benchmark_report.html`
   - `SYSTEM_INFO.md`
+- **Published report (clickable)**:
+  - GitHub file view: `https://github.com/pendakwahteknologi/benchmark-rocm/blob/main/docs/reports/benchmark_report_2026-02-17.html`
+  - Raw HTML download: `https://raw.githubusercontent.com/pendakwahteknologi/benchmark-rocm/main/docs/reports/benchmark_report_2026-02-17.html`
+- **Note**: GitHub shows HTML as source. Download/open the raw file in a browser for full visual rendering.
 - **Benchmark mode**: `run_benchmark.sh` (llama-bench, 3 repetitions)
 
 ### System Overview (Test Bench)
