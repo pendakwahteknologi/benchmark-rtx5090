@@ -138,6 +138,17 @@ Context:           8192 tokens max
    # Need at least 50GB free (largest models: 32B Q5 = 21.7GB)
    ```
 
+4. **Set script execute permissions (recommended after clone)**
+   ```bash
+   chmod +x /path/to/benchmark-rocm/scripts/*.sh
+   chmod +x /path/to/benchmark-rocm/scripts/*.py
+   ```
+   If you skip this, you can still run scripts via interpreter:
+   ```bash
+   bash scripts/run_benchmark.sh
+   python3 scripts/generate_report.py
+   ```
+
 ## Path Portability (Important)
 
 The scripts are currently tied to one Ubuntu server layout. If you run them as-is on another machine, they will fail unless your paths match.
@@ -214,6 +225,24 @@ This runs the benchmark in the background so you can:
 - Disconnect from SSH safely
 - Monitor progress with `tail -f results/benchmark_*.log`
 - Check GPU usage with `watch -n 1 rocm-smi`
+
+### Interactive Prompt Benchmark
+
+Use this to run fixed real-world prompts through each model size and supported quantisations with `llama-cli`.
+
+```bash
+bash scripts/run_interactive_bench.sh
+```
+
+This script:
+- Runs unattended (no manual input during execution)
+- Tests 5 built-in prompts across `3B`, `7B`, `14B`, and `32B`
+- Tests quants `Q4_K_M`, `Q5_K_M`, and `Q8_0` where VRAM estimate allows
+- Automatically skips `Q8_0` when estimated VRAM use exceeds `TOTAL_VRAM_GB` (for example 32B)
+- Writes output to:
+  - `results/interactive_bench_YYYYMMDD_HHMMSS.jsonl`
+  - `results/interactive_bench_YYYYMMDD_HHMMSS.log`
+- Cleans up model files after each size
 
 ### Check Status
 
@@ -449,10 +478,12 @@ bash scripts/check_benchmark.sh
 ---
 
 #### `run_interactive_bench.sh`
-**Purpose**: Automated prompt-response benchmark with `llama-cli` (Q4 only).
+**Purpose**: Automated prompt-response benchmark with `llama-cli` across model sizes and quantisations.
 
 **What it actually does**:
-- Runs 5 fixed prompts on each size (`3B/7B/14B/32B`) using `Q4_K_M`.
+- Runs 5 fixed prompts on each size (`3B/7B/14B/32B`).
+- Tests quants `Q4_K_M`, `Q5_K_M`, and `Q8_0` where VRAM fit check allows.
+- Uses the same `Q8_0` skip logic as `run_benchmark.sh` when estimated VRAM exceeds `TOTAL_VRAM_GB`.
 - Copies each model from `/mnt/usb/models` if missing.
 - Captures response preview and timing lines from stderr.
 - Writes:
@@ -478,7 +509,7 @@ bash scripts/check_benchmark.sh
 bash scripts/run_interactive_bench.sh
 ```
 
-**Output**: JSONL file with prompts, responses, and timing
+**Output**: JSONL file with model size, quant, prompts, responses, and timing
 
 ---
 
@@ -548,6 +579,27 @@ sudo mount /dev/sda1 /mnt/usb
 # Verify models are present
 ls /mnt/usb/models/*.gguf
 # Should show 11 GGUF files
+```
+
+---
+
+### Permission Denied On Script Run
+
+**Problem**: Running `./scripts/run_benchmark.sh` (or other scripts) returns `Permission denied`.
+
+**Cause**: Execute bits are missing (for example files show `-rw-rw-r--`).
+
+**Solution**:
+```bash
+chmod +x /path/to/benchmark-rocm/scripts/*.sh
+chmod +x /path/to/benchmark-rocm/scripts/*.py
+```
+
+**Alternative** (without execute bit):
+```bash
+bash scripts/run_benchmark.sh
+bash scripts/run_interactive_bench.sh
+python3 scripts/generate_report.py
 ```
 
 ---
