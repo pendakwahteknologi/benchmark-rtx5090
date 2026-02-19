@@ -7,6 +7,7 @@ Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [New Feature: Cost Per Token (RM)](#new-feature-cost-per-token-rm)
 - [Hardware & Software](#hardware--software)
 - [What We're Benchmarking](#what-were-benchmarking)
 - [Setup Instructions](#setup-instructions)
@@ -32,6 +33,36 @@ The suite automatically:
 - Runs benchmarks across 4 model sizes × 3 quantization levels
 - Manages disk space by deleting models after testing each size
 - Generates detailed results with pretty terminal output + HTML reports
+
+---
+
+## New Feature: Cost Per Token (RM)
+
+This repo now includes a dedicated **cost-per-token benchmark**:
+
+- Script: `scripts/run_token_per_watt_benchmark.sh`
+- CLI viewer: `scripts/show_token_per_watt_results.sh`
+- Currency: **MYR (RM)** via `ELECTRICITY_COST_MYR_PER_KWH`
+
+It measures generation speed and energy efficiency, then estimates electricity cost:
+
+- `tok/s` (speed)
+- `tok/W` (efficiency)
+- `sec/1k tok` (latency style metric)
+- `RM/1k tok` and `RM/1M tok` (energy cost estimate)
+
+Quick start:
+
+```bash
+bash scripts/run_token_per_watt_benchmark.sh
+bash scripts/show_token_per_watt_results.sh
+```
+
+The original benchmark is unchanged and still available:
+
+```bash
+bash scripts/run_benchmark.sh
+```
 
 ---
 
@@ -199,6 +230,8 @@ benchmark-rocm/
     ├── run_benchmark.sh                 # Main benchmark (foreground)
     ├── run_benchmark_background.sh      # Background runner
     ├── run_interactive_bench.sh         # Real prompt testing
+    ├── run_token_per_watt_benchmark.sh  # TG throughput vs power efficiency
+    ├── show_token_per_watt_results.sh   # CLI table from token-per-watt CSV
     ├── check_benchmark.sh               # Status checker
     └── generate_report.py               # HTML report generator
 ```
@@ -245,6 +278,34 @@ This script:
   - `results/interactive_bench_YYYYMMDD_HHMMSS.log`
 - Cleans up model files after each size
 
+### Token-Per-Watt Benchmark
+
+Use this benchmark when you want to quantify **generation efficiency** and approximate **electricity cost per token**.
+
+```bash
+bash scripts/run_token_per_watt_benchmark.sh
+```
+
+This script:
+- Runs TG-only `llama-bench` tests (`-p 0`, `-n <TG_LENGTH>`) across all model sizes and supported quants
+- Samples GPU power repeatedly with `rocm-smi --showpower`
+- Computes:
+  - `tg_tok_sec` (generation speed)
+  - `avg_power_w` (average GPU package power during each run)
+  - `tokens_per_watt` (tok/W)
+  - `joules_per_token`
+  - `sec_per_1k_tokens` (time to generate 1,000 tokens)
+  - `rm_per_1k_tokens` and `rm_per_1m_tokens` (estimated energy cost)
+- Writes output to:
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.csv`
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.json`
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.log`
+
+Example with custom electricity rate (MYR):
+```bash
+ELECTRICITY_COST_MYR_PER_KWH=0.55 bash scripts/run_token_per_watt_benchmark.sh
+```
+
 ### Check Status
 
 ```bash
@@ -256,6 +317,20 @@ Shows:
 - GPU utilisation
 - Disk space
 - Latest log output (last 30 lines)
+
+### Show Token-Per-Watt Results In CLI
+
+Use this to print a clean table in terminal (good for demos/screen recording):
+
+```bash
+bash scripts/show_token_per_watt_results.sh
+```
+
+Or provide a specific CSV:
+
+```bash
+bash scripts/show_token_per_watt_results.sh results/token_per_watt_YYYYMMDD_HHMMSS.csv
+```
 
 ---
 
@@ -514,6 +589,76 @@ bash scripts/run_interactive_bench.sh
 
 ---
 
+#### `run_token_per_watt_benchmark.sh`
+**Purpose**: Measure text generation efficiency relative to GPU power draw.
+
+**What it actually does**:
+- Uses `llama-bench` for TG-only runs (default: `TG_LENGTH=512`, `N_REPS=5`).
+- Samples GPU package power with `rocm-smi` during each benchmark run.
+- Calculates:
+  - `tokens_per_watt` (tok/W)
+  - `joules_per_token` (W / tok/s)
+  - `sec_per_1k_tokens`
+  - `wh_per_1k_tokens`
+  - `kwh_per_1m_tokens`
+  - `rm_per_1k_tokens` and `rm_per_1m_tokens` at configurable electricity price.
+- Tests model sizes `3B, 7B, 14B, 32B` and quants `Q4_K_M`, `Q5_K_M`, `Q8_0` where VRAM estimate allows.
+- Copies models from `/mnt/usb/models`, benchmarks, then cleans up per model size.
+- Writes:
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.csv`
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.json`
+  - `results/token_per_watt_YYYYMMDD_HHMMSS.log`
+
+**Machine-specific paths**:
+- Yes for default llama.cpp and USB paths, but this script supports overrides via environment variables.
+
+**Usage**:
+```bash
+bash scripts/run_token_per_watt_benchmark.sh
+```
+
+**Useful overrides**:
+```bash
+LLAMA_BENCH="/path/to/llama-bench" \
+USB_MODEL_DIR="/path/to/models" \
+ELECTRICITY_COST_MYR_PER_KWH=0.55 \
+POWER_SAMPLE_INTERVAL_SEC=0.5 \
+GPU_INDEX=0 \
+MODEL_SIZES_CSV="3B,7B,14B,32B" \
+bash scripts/run_token_per_watt_benchmark.sh
+```
+
+**How to read the output**:
+- `tok/s`: higher is faster.
+- `tok/W`: higher is more energy efficient.
+- `sec/1k tok`: lower is better responsiveness.
+- `RM/1k tok` and `RM/1M tok`: lower is cheaper energy cost.
+
+**Quick learning run** (single model, fastest to understand output):
+```bash
+MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_benchmark.sh
+```
+
+---
+
+#### `show_token_per_watt_results.sh`
+**Purpose**: Render token-per-watt CSV results as a terminal-friendly ranked table.
+
+**What it does**:
+- Uses latest `results/token_per_watt_*.csv` by default.
+- Sorts by `tok/W` descending.
+- Prints:
+  - ranked table (`tok/s`, `Avg W`, `tok/W`, `sec/1k`, `RM/1k`)
+  - callouts for fastest, most efficient, and cheapest config
+
+**Usage**:
+```bash
+bash scripts/show_token_per_watt_results.sh
+bash scripts/show_token_per_watt_results.sh results/token_per_watt_YYYYMMDD_HHMMSS.csv
+```
+
+---
+
 #### `generate_report.py`
 **Purpose**: Convert latest `benchmark_*.csv` into a single HTML report.
 
@@ -562,6 +707,19 @@ VRAM_ESTIMATE_Q8["3B"]=4
 VRAM_ESTIMATE_Q8["7B"]=8
 VRAM_ESTIMATE_Q8["14B"]=16
 VRAM_ESTIMATE_Q8["32B"]=34
+```
+
+For token-per-watt runs (`run_token_per_watt_benchmark.sh`), useful runtime overrides:
+
+```bash
+TG_LENGTH=512
+N_REPS=5
+POWER_SAMPLE_INTERVAL_SEC=0.5
+GPU_INDEX=0
+ELECTRICITY_COST_MYR_PER_KWH=0.55
+MODEL_SIZES_CSV="3B,7B,14B,32B"
+LLAMA_BENCH="/path/to/llama-bench"
+USB_MODEL_DIR="/mnt/usb/models"
 ```
 
 ---
