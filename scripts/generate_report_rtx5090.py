@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate Comprehensive HTML Benchmark Report for NVIDIA GB10 (GX10)
+Generate Comprehensive HTML Benchmark Report for NVIDIA GeForce RTX 5090
 Reads ALL CSV results from llama-bench and token-per-watt benchmarks,
 aggregates across runs, and produces a professional interactive HTML report.
 
@@ -27,7 +27,7 @@ def get_system_info():
             ['nvidia-smi', '--query-gpu=name', '--format=csv,noheader'],
             text=True).strip()
     except Exception:
-        info['gpu'] = 'NVIDIA GB10'
+        info['gpu'] = 'NVIDIA GeForce RTX 5090'
 
     try:
         info['driver'] = subprocess.check_output(
@@ -172,7 +172,7 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASUS Ascent GX10 — Qwen2.5 GGUF Benchmark Report</title>
+    <title>NVIDIA RTX 5090 — Qwen2.5 GGUF Benchmark Report</title>
     <style>
         :root {
             --primary: #0f3460;
@@ -781,19 +781,19 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
     <div class="header">
         <div class="header-top">
             <div class="header-brand">
-                <div class="header-logo">GX</div>
+                <div class="header-logo">RTX</div>
                 <div>
-                    <div class="header-device">ASUS Ascent GX10</div>
+                    <div class="header-device">NVIDIA GeForce RTX 5090</div>
                 </div>
             </div>
             <div class="header-date">{TIMESTAMP}</div>
         </div>
         <h1>Qwen2.5 GGUF Benchmark Report</h1>
-        <div class="header-subtitle">llama.cpp inference performance &mdash; NVIDIA Blackwell GB10 CUDA</div>
+        <div class="header-subtitle">llama.cpp inference performance &mdash; NVIDIA GeForce RTX 5090 CUDA</div>
         <div class="header-badges">
             <span class="badge badge-gpu">{GPU_NAME}</span>
-            <span class="badge badge-info">Blackwell (GB10)</span>
-            <span class="badge badge-info">{RAM_TOTAL} Unified Memory</span>
+            <span class="badge badge-info">Blackwell (RTX 5090)</span>
+            <span class="badge badge-info">{VRAM_TOTAL} VRAM</span>
             <span class="badge badge-info">CUDA {CUDA_VER}</span>
             <span class="badge badge-runs">{N_BENCH_RUNS} benchmark runs &bull; {N_TPW_RUNS} power runs</span>
         </div>
@@ -965,8 +965,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 </div>
 
 <div class="footer">
-    <p>Generated {TIMESTAMP} &bull; {GPU_NAME} &bull; Blackwell (GB10) &bull; {RAM_TOTAL} Unified Memory &bull; CUDA {CUDA_VER} &bull; llama.cpp (CUDA)</p>
-    <p style="margin-top:4px;">ASUS Ascent GX10 &mdash; AI Workstation Benchmark Suite</p>
+    <p>Generated {TIMESTAMP} &bull; {GPU_NAME} &bull; Blackwell (RTX 5090) &bull; {VRAM_TOTAL} VRAM &bull; CUDA {CUDA_VER} &bull; llama.cpp (CUDA)</p>
+    <p style="margin-top:4px;">NVIDIA GeForce RTX 5090 &mdash; AI Benchmark Suite</p>
 </div>
 
 <script>
@@ -1161,8 +1161,8 @@ if (tpwData.length > 0) {
 // System specs
 var specsContainer = document.getElementById('sys-specs');
 var specs = [
-    ['GPU', '{GPU_NAME}'], ['Architecture', 'Blackwell (GB10)'],
-    ['Memory', '{RAM_TOTAL} Unified (CPU+GPU shared)'], ['CUDA Version', '{CUDA_VER}'],
+    ['GPU', '{GPU_NAME}'], ['Architecture', 'Blackwell (RTX 5090)'],
+    ['VRAM', '{VRAM_TOTAL}'], ['System RAM', '{RAM_TOTAL}'], ['CUDA Version', '{CUDA_VER}'],
     ['Driver', '{DRIVER_VER}'], ['CPU', '{CPU_NAME}'],
     ['Backend', 'llama.cpp (CUDA)'], ['Flash Attention', 'Enabled'],
     ['GPU Layers', 'All offloaded (ngl=99)'], ['Repetitions', '{N_REPS} per config per run']
@@ -1387,7 +1387,7 @@ bestData.forEach(function(r) {
 
 def report_is_stale(results_dir):
     """Check if the HTML report is missing or older than any result CSV."""
-    report = results_dir / "benchmark_report_gx10.html"
+    report = results_dir / "benchmark_report_rtx5090.html"
     if not report.exists():
         return True
 
@@ -1401,7 +1401,7 @@ def report_is_stale(results_dir):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate HTML benchmark report for NVIDIA GB10 (GX10)")
+        description="Generate HTML benchmark report for NVIDIA GeForce RTX 5090")
     parser.add_argument(
         "--force", action="store_true",
         help="Regenerate report even if it is up to date")
@@ -1411,7 +1411,7 @@ def main():
     args = parser.parse_args()
 
     results_dir = Path("results")
-    output_path = results_dir / "benchmark_report_gx10.html"
+    output_path = results_dir / "benchmark_report_rtx5090.html"
 
     stale = report_is_stale(results_dir)
 
@@ -1440,7 +1440,7 @@ def main():
     bench_runs = load_benchmark_csvs(results_dir)
     if not bench_runs:
         print("[ERROR] No benchmark CSV found in results/")
-        print("        Run ./scripts/run_benchmark_gx10.sh first.")
+        print("        Run ./scripts/run_benchmark_rtx5090.sh first.")
         sys.exit(1)
 
     print(f"[INFO] Found {len(bench_runs)} benchmark runs:")
@@ -1487,13 +1487,14 @@ def main():
     html = html.replace("{N_BENCH_RUNS}", str(len(bench_runs)))
     html = html.replace("{N_TPW_RUNS}", str(len(tpw_runs)))
     html = html.replace("{ELEC_RATE}", elec_rate)
-    html = html.replace("{GPU_NAME}", sysinfo.get('gpu', 'NVIDIA GB10'))
-    html = html.replace("{RAM_TOTAL}", sysinfo.get('ram', '128Gi'))
-    html = html.replace("{CUDA_VER}", sysinfo.get('cuda', '13.0'))
+    html = html.replace("{GPU_NAME}", sysinfo.get('gpu', 'NVIDIA GeForce RTX 5090'))
+    html = html.replace("{VRAM_TOTAL}", sysinfo.get('vram', '32607 MiB'))
+    html = html.replace("{RAM_TOTAL}", sysinfo.get('ram', '944Gi'))
+    html = html.replace("{CUDA_VER}", sysinfo.get('cuda', '12.8'))
     html = html.replace("{DRIVER_VER}", sysinfo.get('driver', 'Unknown'))
-    html = html.replace("{CPU_NAME}", sysinfo.get('cpu', 'ARM Cortex-X925 + A725'))
+    html = html.replace("{CPU_NAME}", sysinfo.get('cpu', 'AMD EPYC 7543 32-Core Processor'))
 
-    output_path = results_dir / "benchmark_report_gx10.html"
+    output_path = results_dir / "benchmark_report_rtx5090.html"
     with output_path.open("w", encoding="utf-8") as f:
         f.write(html)
 

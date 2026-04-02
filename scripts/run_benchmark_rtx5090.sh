@@ -1,17 +1,17 @@
 #!/bin/bash
 ##############################################################################
-# Qwen2.5 Benchmark Suite for NVIDIA GB10 (Project DIGITS / GX10)
+# Qwen2.5 Benchmark Suite for NVIDIA GeForce RTX 5090
 # Tests tok/sec, prompt processing, and generation across model sizes & quants
 # Models downloaded from HuggingFace into local models/ directory
 ##############################################################################
 
 set -e
 
-cd /home/gx10/benchmark-gx10
+cd /workspace/benchmark-rtx5090
 
-LLAMA_BENCH="/home/gx10/llama.cpp/build/bin/llama-bench"
-LLAMA_CLI="/home/gx10/llama.cpp/build/bin/llama-cli"
-export LD_LIBRARY_PATH="/home/gx10/llama.cpp/build/bin:$LD_LIBRARY_PATH"
+LLAMA_BENCH="/workspace/llama.cpp/build/bin/llama-bench"
+LLAMA_CLI="/workspace/llama.cpp/build/bin/llama-cli"
+export LD_LIBRARY_PATH="/workspace/llama.cpp/build/bin:$LD_LIBRARY_PATH"
 MODEL_DIR="$(pwd)/models"
 RESULTS_DIR="$(pwd)/results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -57,8 +57,8 @@ QUANT_FILES_Q8["7B"]="qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf"
 QUANT_FILES_Q8["14B"]="qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf"
 QUANT_FILES_Q8["32B"]="qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf"
 
-# GB10 has ~128GB unified memory - all models fit including Q8_0 for 32B
-TOTAL_VRAM_GB=128
+# RTX 5090 has 32GB VRAM - 32B Q8_0 (~34.8GB) needs partial CPU offload
+TOTAL_VRAM_GB=32
 
 # Prompt lengths for benchmarking
 PP_LENGTHS="128,256,512"
@@ -117,7 +117,7 @@ draw_progress_bar() {
 ##############################################################################
 # System info gathering
 ##############################################################################
-GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "NVIDIA GB10")
+GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "NVIDIA GeForce RTX 5090")
 DRIVER_VER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 || echo "Unknown")
 CUDA_VER=$(nvcc --version 2>/dev/null | grep "release" | sed 's/.*release //' | sed 's/,.*//' || echo "Unknown")
 CPU_MODEL=$(lscpu | grep "Model name" | head -1 | sed 's/.*: *//')
@@ -138,9 +138,11 @@ echo "    \\__\\_\\ \\_/\\_/ \\___|_| |_||____|___/  |____/ \\___|_| |_|\\___|_|
 out "${RESET}"
 out "${CYAN}$(draw_line)${RESET}"
 echo ""
+VRAM_TOTAL=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader 2>/dev/null | head -1 || echo "32607 MiB")
 out "  ${WHITE}${BOLD}GPU${RESET}          ${GPU_NAME}"
-out "  ${WHITE}${BOLD}Architecture${RESET} Blackwell (GB10)"
-out "  ${WHITE}${BOLD}Memory${RESET}       ${RAM_TOTAL} Unified (CPU+GPU shared)"
+out "  ${WHITE}${BOLD}Architecture${RESET} Blackwell (RTX 5090)"
+out "  ${WHITE}${BOLD}VRAM${RESET}         ${VRAM_TOTAL}"
+out "  ${WHITE}${BOLD}System RAM${RESET}   ${RAM_TOTAL}"
 out "  ${WHITE}${BOLD}CUDA${RESET}         ${CUDA_VER}"
 out "  ${WHITE}${BOLD}Driver${RESET}       ${DRIVER_VER}"
 out "  ${WHITE}${BOLD}CPU${RESET}          ${CPU_MODEL}"
@@ -150,7 +152,7 @@ echo ""
 out "${CYAN}$(draw_line '-')${RESET}"
 echo ""
 out "  ${WHITE}${BOLD}Models${RESET}       Qwen2.5-3B / 7B / 14B / 32B Instruct GGUF"
-out "  ${WHITE}${BOLD}Quants${RESET}       Q4_K_M, Q5_K_M, Q8_0 (all fit in unified memory)"
+out "  ${WHITE}${BOLD}Quants${RESET}       Q4_K_M, Q5_K_M, Q8_0 (32B Q8_0 uses partial CPU offload)"
 out "  ${WHITE}${BOLD}Tests${RESET}        Prompt Processing (PP) at 128, 256, 512 tokens"
 out "                Text Generation  (TG) at 128 tokens"
 out "  ${WHITE}${BOLD}Repetitions${RESET}  ${N_REPS} per configuration (averaged)"
@@ -168,9 +170,9 @@ cat > "$RESULTS_JSON" << JSONEOF
 {
   "metadata": {
     "gpu": "${GPU_NAME}",
-    "arch": "Blackwell (GB10)",
-    "memory_gb": "$(echo $RAM_TOTAL | sed 's/Gi//')",
-    "memory_type": "Unified (CPU+GPU shared)",
+    "arch": "Blackwell (RTX 5090)",
+    "vram_gb": "32",
+    "memory_type": "Discrete (32GB VRAM + ${RAM_TOTAL} System RAM)",
     "cuda_version": "${CUDA_VER}",
     "driver_version": "${DRIVER_VER}",
     "cpu": "${CPU_MODEL}",
@@ -191,7 +193,7 @@ logfile "[INFO] Benchmark started at $(date)"
 logfile "[INFO] GPU: ${GPU_NAME}"
 logfile "[INFO] CUDA: ${CUDA_VER} | Driver: ${DRIVER_VER}"
 logfile "[INFO] CPU: ${CPU_MODEL}"
-logfile "[INFO] Memory: ${RAM_TOTAL} Unified"
+logfile "[INFO] VRAM: ${VRAM_TOTAL} | System RAM: ${RAM_TOTAL}"
 logfile ""
 
 ##############################################################################
@@ -223,7 +225,7 @@ if [ "$MODEL_COUNT" -eq 0 ]; then
 fi
 out "  ${GREEN}OK${RESET}  ${MODEL_COUNT} model files available"
 
-FREE_DISK=$(df -h /home/gx10/ | tail -1 | awk '{print $4}')
+FREE_DISK=$(df -h /workspace/ | tail -1 | awk '{print $4}')
 out "  ${GREEN}OK${RESET}  Free disk space: ${FREE_DISK}"
 echo ""
 sleep 1
@@ -232,7 +234,7 @@ sleep 1
 # Run benchmark for a single model file
 ##############################################################################
 BENCH_COUNT=0
-# GB10 can run all quants for all sizes — total = 4 sizes x 3 quants = 12
+# RTX 5090 runs all quants for all sizes — total = 4 sizes x 3 quants = 12
 TOTAL_BENCH_COUNT=$((TOTAL_MODELS * 3))
 
 run_bench() {
@@ -330,7 +332,7 @@ for size in "${MODEL_SIZES[@]}"; do
     logfile "================================================================================"
     logfile ""
 
-    # GB10 has enough unified memory for all quants
+    # RTX 5090 has 32GB VRAM — all quants tested (32B Q8_0 uses partial CPU offload)
     quants_to_test=("Q4_K_M" "Q5_K_M" "Q8_0")
 
     out "     Quantizations: ${MAGENTA}${quants_to_test[*]}${RESET}"
@@ -366,7 +368,7 @@ out "  ${DIM}Total time: $(elapsed_time)${RESET}"
 echo ""
 out "${CYAN}$(draw_line)${RESET}"
 echo ""
-out "  ${WHITE}${BOLD}${GPU_NAME}${RESET}  ${DIM}|${RESET}  Blackwell (GB10)  ${DIM}|${RESET}  ${RAM_TOTAL} Unified  ${DIM}|${RESET}  CUDA ${CUDA_VER}"
+out "  ${WHITE}${BOLD}${GPU_NAME}${RESET}  ${DIM}|${RESET}  Blackwell (RTX 5090)  ${DIM}|${RESET}  ${VRAM_TOTAL} VRAM  ${DIM}|${RESET}  CUDA ${CUDA_VER}"
 out "  llama.cpp (CUDA)   ${DIM}|${RESET}  Flash Attention ON   ${DIM}|${RESET}  All layers on GPU"
 echo ""
 out "${CYAN}$(draw_line '-')${RESET}"
@@ -376,7 +378,7 @@ logfile "=======================================================================
 logfile " BENCHMARK COMPLETE - Total time: $(elapsed_time)"
 logfile "================================================================================"
 logfile ""
-logfile " ${GPU_NAME} (Blackwell GB10) | ${RAM_TOTAL} Unified | CUDA ${CUDA_VER}"
+logfile " ${GPU_NAME} (Blackwell RTX 5090) | ${VRAM_TOTAL} VRAM | CUDA ${CUDA_VER}"
 logfile " llama.cpp (CUDA) | Flash Attention ON | All layers on GPU"
 logfile ""
 
@@ -473,7 +475,7 @@ out "    JSON  $RESULTS_JSON"
 out "    Log   $LOG_FILE"
 echo ""
 out "  ${DIM}Generate HTML report:${RESET}"
-out "    python3 scripts/generate_report_gx10.py"
+out "    python3 scripts/generate_report_rtx5090.py"
 echo ""
 out "${CYAN}$(draw_line)${RESET}"
 echo ""

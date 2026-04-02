@@ -1,8 +1,8 @@
 #!/bin/bash
 ##############################################################################
-# Token-Per-Watt Benchmark Suite for NVIDIA GB10 (Project DIGITS / GX10)
+# Token-Per-Watt Benchmark Suite for NVIDIA GeForce RTX 5090
 # Measures generation throughput efficiency: tok/s, avg watts, tok/W, J/token
-# Uses nvidia-smi for power monitoring instead of rocm-smi
+# Uses nvidia-smi for power monitoring
 ##############################################################################
 
 set -euo pipefail
@@ -14,7 +14,7 @@ cd "$ROOT_DIR"
 ##############################################################################
 # Paths and benchmark configuration
 ##############################################################################
-LLAMA_BENCH="${LLAMA_BENCH:-/home/gx10/llama.cpp/build/bin/llama-bench}"
+LLAMA_BENCH="${LLAMA_BENCH:-/workspace/llama.cpp/build/bin/llama-bench}"
 LLAMA_BIN_DIR="$(dirname "$LLAMA_BENCH")"
 export LD_LIBRARY_PATH="${LLAMA_BIN_DIR}:${LD_LIBRARY_PATH:-}"
 
@@ -44,8 +44,8 @@ else
     COST_RATE_SOURCE="myr_default"
 fi
 
-# GB10 has 128GB unified memory
-TOTAL_VRAM_GB="${TOTAL_VRAM_GB:-128}"
+# RTX 5090 has 32GB VRAM (discrete)
+TOTAL_VRAM_GB="${TOTAL_VRAM_GB:-32}"
 
 DEFAULT_MODEL_SIZES=("3B" "7B" "14B" "32B")
 if [ -n "${MODEL_SIZES_CSV:-}" ]; then
@@ -232,7 +232,7 @@ extract_bench_tok_sec() {
 ##############################################################################
 # System info
 ##############################################################################
-GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "NVIDIA GB10")
+GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "NVIDIA GeForce RTX 5090")
 DRIVER_VER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -1 || echo "Unknown")
 CUDA_VER=$(nvcc --version 2>/dev/null | grep "release" | sed 's/.*release //' | sed 's/,.*//' || echo "Unknown")
 RAM_TOTAL=$(free -h | awk '/Mem:/ {print $2}')
@@ -243,12 +243,13 @@ RAM_TOTAL=$(free -h | awk '/Mem:/ {print $2}')
 clear
 echo ""
 out "${CYAN}$(draw_line)${RESET}"
-out "${WHITE}${BOLD}TOKEN-PER-WATT BENCHMARK (NVIDIA GB10)${RESET}"
+out "${WHITE}${BOLD}TOKEN-PER-WATT BENCHMARK (NVIDIA GeForce RTX 5090)${RESET}"
 out "${CYAN}$(draw_line)${RESET}"
 echo ""
 out "  ${WHITE}${BOLD}GPU${RESET}             ${GPU_NAME}"
-out "  ${WHITE}${BOLD}Architecture${RESET}    Blackwell (GB10)"
-out "  ${WHITE}${BOLD}Memory${RESET}          ${RAM_TOTAL} Unified"
+out "  ${WHITE}${BOLD}Architecture${RESET}    Blackwell (RTX 5090)"
+out "  ${WHITE}${BOLD}VRAM${RESET}            $(nvidia-smi --query-gpu=memory.total --format=csv,noheader 2>/dev/null | head -1 || echo '32607 MiB')"
+out "  ${WHITE}${BOLD}System RAM${RESET}      ${RAM_TOTAL}"
 out "  ${WHITE}${BOLD}CUDA${RESET}            ${CUDA_VER}"
 out "  ${WHITE}${BOLD}Benchmark${RESET}       TG-only throughput vs power draw"
 out "  ${WHITE}${BOLD}TG Tokens${RESET}       ${TG_LENGTH}"
@@ -308,7 +309,7 @@ echo "model_size,quant,tg_tokens,tg_tok_sec,avg_power_w,min_power_w,max_power_w,
 # Benchmark counters
 ##############################################################################
 BENCH_COUNT=0
-# GB10 fits all quants: 4 sizes x 3 quants = 12
+# RTX 5090 tests all quants: 4 sizes x 3 quants = 12
 TOTAL_BENCH_COUNT=$((${#MODEL_SIZES[@]} * 3))
 FAILED_BENCHES=0
 
@@ -457,7 +458,7 @@ for size in "${MODEL_SIZES[@]}"; do
     logfile "================================================================================"
     logfile ""
 
-    # GB10 fits all quants
+    # RTX 5090 32GB VRAM — all quants tested (32B Q8_0 uses partial CPU offload)
     quants_to_test=("Q4_K_M" "Q5_K_M" "Q8_0")
 
     out "     Quantizations: ${MAGENTA}${quants_to_test[*]}${RESET}"
@@ -551,8 +552,8 @@ payload = {
     "metadata": {
         "timestamp": datetime.now().isoformat(),
         "gpu": gpu_name,
-        "arch": "Blackwell (GB10)",
-        "memory": f"{ram_total} Unified",
+        "arch": "Blackwell (RTX 5090)",
+        "memory": f"32GB VRAM + {ram_total} System RAM",
         "cuda_version": cuda_ver,
         "backend": "llama.cpp (CUDA)",
         "benchmark_type": "token_per_watt_tg_only",
