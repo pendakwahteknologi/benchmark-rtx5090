@@ -1,6 +1,6 @@
-# Qwen2.5 GGUF Benchmark Suite for NVIDIA GB10 (Project DIGITS / GX10)
+# Qwen2.5 GGUF Benchmark Suite for ASUS Ascent GX10
 
-Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on NVIDIA's Blackwell GB10 GPU using CUDA and llama.cpp.
+Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on the [ASUS Ascent GX10](https://www.asus.com/my/networking-iot-servers/desktop-ai-supercomputer/ultra-small-ai-supercomputers/asus-ascent-gx10/) desktop AI supercomputer, powered by the NVIDIA GB10 Grace Blackwell Superchip, using CUDA and llama.cpp.
 
 ---
 
@@ -21,12 +21,12 @@ Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14
 
 ## Overview
 
-This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the NVIDIA GB10 (Project DIGITS) can:
+This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the ASUS Ascent GX10 can:
 
 1. **Process input prompts** (Prompt Processing / PP) - How quickly the model reads and understands your input
 2. **Generate output tokens** (Text Generation / TG) - How quickly the model writes responses
 
-The GB10 has **128GB unified memory** shared between CPU and GPU, meaning **all model sizes and quantizations fit** — including 32B Q8_0 (~34.8GB).
+The ASUS Ascent GX10 has **128GB LPDDR5X unified memory** shared between CPU and GPU via NVLink-C2C, meaning **all model sizes and quantizations fit** — including 32B Q8_0 (~34.8GB).
 
 The suite automatically:
 - Downloads models from Hugging Face (or uses pre-downloaded models)
@@ -71,14 +71,20 @@ bash scripts/run_benchmark_gx10.sh
 
 | Component | Specification |
 |-----------|---------------|
-| **GPU** | NVIDIA GB10 |
-| **Architecture** | Blackwell (Compute Capability 12.1) |
-| **Memory** | 128 GB Unified (CPU+GPU shared) |
-| **Memory Type** | LPDDR5X (unified address space) |
-| **CPU** | ARM Cortex-X925 (10 cores @ 3.9 GHz) + Cortex-A725 (10 cores @ 2.8 GHz) |
-| **Total CPU Cores** | 20 (big.LITTLE) |
+| **Device** | [ASUS Ascent GX10](https://www.asus.com/my/networking-iot-servers/desktop-ai-supercomputer/ultra-small-ai-supercomputers/asus-ascent-gx10/) |
+| **SoC** | NVIDIA GB10 Grace Blackwell Superchip |
+| **GPU** | NVIDIA Blackwell GPU with 5th-gen Tensor Cores |
+| **GPU Architecture** | Blackwell (Compute Capability 12.1) |
+| **AI Performance** | Up to 1 PFLOP (FP4) |
+| **CPU** | 20-core ARM (Cortex-X925 @ 3.9 GHz + Cortex-A725 @ 2.8 GHz) |
+| **Memory** | 128 GB LPDDR5X Coherent Unified System Memory |
+| **CPU-GPU Interconnect** | NVLink-C2C (5x PCIe 5.0 bandwidth) |
 | **Storage** | 916 GB NVMe SSD |
-| **TDP** | ~55-63W (GPU under load) |
+| **Networking** | NVIDIA ConnectX-7, 10 GbE LAN |
+| **Connectivity** | HDMI 2.1b, DisplayPort 2.1, USB 3.2 Gen 2x2 Type-C |
+| **Dimensions** | 282.4 x 187.7 x 56.5 mm |
+| **Cooling** | Vapor chamber with dual-fan, 7-level thermal control |
+| **Power (GPU under load)** | ~55-63W |
 
 ### Software Stack
 
@@ -124,7 +130,7 @@ We test 4 model sizes from the Qwen2.5-Instruct family:
 | **Q5_K_M** | 5-bit | Medium (~2.3GB for 3B) | Better | Fast |
 | **Q8_0** | 8-bit | Largest (~3.4GB for 3B) | Best | Slower |
 
-**Note**: The GB10's 128GB unified memory fits **all** quantizations for **all** model sizes, including 32B Q8_0 (~34.8GB).
+**Note**: The ASUS Ascent GX10's 128GB unified memory fits **all** quantizations for **all** model sizes, including 32B Q8_0 (~34.8GB).
 
 ### Test Types
 
@@ -227,7 +233,7 @@ Flash Attention:   Enabled (fa=1)
 3. **Verify CUDA**
    ```bash
    nvidia-smi
-   # Should show: NVIDIA GB10, Driver 580.142, CUDA 13.0
+   # Should show: NVIDIA GB10 (ASUS Ascent GX10), Driver 580.142, CUDA 13.0
    ```
 
 4. **Set script execute permissions**
@@ -310,12 +316,12 @@ During the benchmark, you'll see:
 
 #### 1. Opening Banner
 ```
-  GPU          NVIDIA GB10
-  Architecture Blackwell (GB10)
-  Memory       121Gi Unified (CPU+GPU shared)
+  Device       ASUS Ascent GX10
+  SoC          NVIDIA GB10 Grace Blackwell Superchip
+  Memory       128 GB LPDDR5X Unified (CPU+GPU shared)
   CUDA         13.0
   Driver       580.142
-  CPU          Cortex-X925
+  CPU          ARM Cortex-X925 + Cortex-A725 (20 cores)
   Backend      llama.cpp (CUDA)
   Flash Attn   Enabled
 ```
@@ -397,7 +403,7 @@ cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=native
 cmake --build build --target llama-bench llama-cli -j$(nproc)
 ```
 
-The GB10 is compute capability 12.1 — using `-DCMAKE_CUDA_ARCHITECTURES=native` ensures correct code generation.
+The ASUS Ascent GX10's GB10 SoC is compute capability 12.1 — using `-DCMAKE_CUDA_ARCHITECTURES=native` ensures correct code generation.
 
 ### Library Not Found
 
@@ -451,22 +457,25 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 
 ## Measured Results (2026-04-02)
 
-### System Overview (GX10)
+### System Overview (ASUS Ascent GX10)
 
 | Component | Value |
 |----------|-------|
-| **Device** | NVIDIA Project DIGITS (GX10) |
+| **Device** | ASUS Ascent GX10 |
+| **SoC** | NVIDIA GB10 Grace Blackwell Superchip |
 | **OS** | Ubuntu 24.04.4 LTS |
 | **Kernel** | 6.17.0-1014-nvidia |
 | **CUDA** | 13.0 |
 | **Driver** | 580.142 |
-| **GPU** | NVIDIA GB10 |
+| **GPU** | NVIDIA Blackwell with 5th-gen Tensor Cores |
 | **GPU Architecture** | Blackwell (Compute Capability 12.1) |
-| **GPU Memory** | 128 GB Unified (LPDDR5X, shared with CPU) |
+| **AI Performance** | Up to 1 PFLOP (FP4) |
+| **Memory** | 128 GB LPDDR5X Coherent Unified (CPU+GPU shared) |
+| **CPU-GPU Interconnect** | NVLink-C2C |
 | **GPU Power (under load)** | 55-63W |
-| **CPU** | ARM Cortex-X925 (10 cores @ 3.9 GHz) + Cortex-A725 (10 cores @ 2.8 GHz) |
-| **CPU Cores** | 20 (big.LITTLE) |
+| **CPU** | 20-core ARM (Cortex-X925 + Cortex-A725, big.LITTLE) |
 | **Storage** | 916 GB NVMe SSD |
+| **Dimensions** | 282.4 x 187.7 x 56.5 mm |
 | **Inference Backend** | llama.cpp CUDA backend |
 | **Flash Attention** | Enabled |
 | **Benchmark Repetitions** | 3 per configuration |
@@ -516,10 +525,10 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 
 ### Key Observations
 
-- The GB10 draws **55-63W under load** — very power-efficient for 128GB of unified memory
+- The ASUS Ascent GX10 draws **55-63W under load** — very power-efficient for a 128GB unified memory AI supercomputer
 - All 12 configurations completed successfully, including **32B Q8_0** (34.8GB)
 - `Q4_K_M` was fastest across all tested sizes
-- Power draw is relatively flat across model sizes (unlike discrete GPUs where larger models draw more power)
+- Power draw is relatively flat across model sizes thanks to the unified memory architecture
 - Electricity cost ranges from RM 0.22/M tokens (3B Q4) to RM 2.58/M tokens (32B Q8)
 
 ---
@@ -548,13 +557,13 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 | **Quality** | Good | Better | Best |
 | **Memory** | Lowest | Medium | Highest |
 
-**Recommendation**: Q4_K_M for most use cases — offers best speed/quality balance on the GB10.
+**Recommendation**: Q4_K_M for most use cases — offers best speed/quality balance on the ASUS Ascent GX10.
 
 ---
 
 ## Models & Quantizations
 
-| Model | Quant | Est. Size | Fits GB10 | Shard Files |
+| Model | Quant | Est. Size | Fits GX10 | Shard Files |
 |-------|-------|-----------|-----------|-------------|
 | Qwen2.5-3B-Instruct | Q4_K_M | ~2.0 GB | Yes | 1 |
 | Qwen2.5-3B-Instruct | Q5_K_M | ~2.3 GB | Yes | 1 |
@@ -569,13 +578,13 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 | Qwen2.5-32B-Instruct | Q5_K_M | ~22.7 GB | Yes | 6 |
 | Qwen2.5-32B-Instruct | Q8_0 | ~34.8 GB | **Yes** | 9 |
 
-All 12 configurations fit in the GB10's 128GB unified memory.
+All 12 configurations fit in the ASUS Ascent GX10's 128GB unified memory.
 
 ---
 
 ## Citation & Credits
 
-**GPU**: NVIDIA GB10 (Blackwell, Project DIGITS)
+**Device**: [ASUS Ascent GX10](https://www.asus.com/my/networking-iot-servers/desktop-ai-supercomputer/ultra-small-ai-supercomputers/asus-ascent-gx10/) (NVIDIA GB10 Grace Blackwell Superchip)
 **Models**: Qwen2.5-Instruct by Alibaba Cloud (Hugging Face: Qwen/Qwen2.5-{SIZE}-Instruct-GGUF)
 **Inference Engine**: llama.cpp by ggerganov (CUDA backend)
 **Compute Platform**: CUDA 13.0 by NVIDIA
