@@ -1,1 +1,10 @@
-.DS_Store
+# Model files (too large for git)
+models/*.gguf
+models/.cache/
+
+# HuggingFace cache
+.cache/
+
+# Temporary files
+*.tmp
+*.swp

@@ -1,47 +1,51 @@
-# Qwen2.5 GGUF Benchmark Suite for ASUS TURBO Radeon AI PRO R9700
+# Qwen2.5 GGUF Benchmark Suite for NVIDIA GB10 (Project DIGITS / GX10)
 
-Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on AMD's RDNA4 GPU using ROCm and llama.cpp.
+Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on NVIDIA's Blackwell GB10 GPU using CUDA and llama.cpp.
+
+Adapted from the [AMD Radeon AI PRO R9700 benchmark suite](https://github.com/pendakwahteknologi/benchmark-rocm).
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
-- [New Feature: Cost Per Token (RM)](#new-feature-cost-per-token-rm)
+- [Cost Per Token (RM)](#cost-per-token-rm)
 - [Hardware & Software](#hardware--software)
 - [What We're Benchmarking](#what-were-benchmarking)
 - [Setup Instructions](#setup-instructions)
-- [Path Portability (Important)](#path-portability-important)
 - [Running Benchmarks](#running-benchmarks)
 - [Understanding Results](#understanding-results)
 - [Script Reference](#script-reference)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Usage](#advanced-usage)
-- [Measured Results (2026-02-17)](#measured-results-2026-02-17)
+- [Measured Results (2026-04-02)](#measured-results-2026-04-02)
+- [GX10 vs R9700 Comparison](#gx10-vs-r9700-comparison)
 
 ---
 
 ## Overview
 
-This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the ASUS TURBO Radeon AI PRO R9700 can:
+This benchmark suite measures **inference performance** of Qwen2.5 language models in GGUF format, testing how fast the NVIDIA GB10 (Project DIGITS) can:
 
 1. **Process input prompts** (Prompt Processing / PP) - How quickly the model reads and understands your input
 2. **Generate output tokens** (Text Generation / TG) - How quickly the model writes responses
 
+The GB10 has **128GB unified memory** shared between CPU and GPU, meaning **all model sizes and quantizations fit** — including 32B Q8_0 which exceeds the 32GB VRAM limit of discrete GPU setups.
+
 The suite automatically:
-- Copies models from USB drive to local storage
-- Runs benchmarks across 4 model sizes × 3 quantization levels
-- Manages disk space by deleting models after testing each size
+- Downloads models from Hugging Face (or uses pre-downloaded models)
+- Runs benchmarks across 4 model sizes x 3 quantization levels = **12 configurations**
 - Generates detailed results with pretty terminal output + HTML reports
+- Measures power efficiency (tok/W) via `nvidia-smi`
 
 ---
 
-## New Feature: Cost Per Token (RM)
+## Cost Per Token (RM)
 
-This repo now includes a dedicated **cost-per-token benchmark**:
+This repo includes a dedicated **cost-per-token benchmark**:
 
-- Script: `scripts/run_token_per_watt_benchmark.sh`
-- CLI viewer: `scripts/show_token_per_watt_results.sh`
+- Script: `scripts/run_token_per_watt_gx10.sh`
+- Power monitoring: `nvidia-smi` (GPU power.draw query)
 - Currency: **MYR (RM)** via `ELECTRICITY_COST_MYR_PER_KWH`
 
 It measures generation speed and energy efficiency, then estimates electricity cost:
@@ -54,14 +58,13 @@ It measures generation speed and energy efficiency, then estimates electricity c
 Quick start:
 
 ```bash
-bash scripts/run_token_per_watt_benchmark.sh
-bash scripts/show_token_per_watt_results.sh
+bash scripts/run_token_per_watt_gx10.sh
 ```
 
-The original benchmark is unchanged and still available:
+The main throughput benchmark:
 
 ```bash
-bash scripts/run_benchmark.sh
+bash scripts/run_benchmark_gx10.sh
 ```
 
 ---
@@ -72,26 +75,33 @@ bash scripts/run_benchmark.sh
 
 | Component | Specification |
 |-----------|---------------|
-| **GPU** | ASUS TURBO Radeon AI PRO R9700 |
-| **Architecture** | RDNA4 (gfx1201) |
-| **VRAM** | 32 GB |
-| **CPU** | Intel Core Ultra 7 265K |
-| **Storage** | 476.9 GB SSD + USB drive for models |
+| **GPU** | NVIDIA GB10 |
+| **Architecture** | Blackwell (Compute Capability 12.1) |
+| **Memory** | 128 GB Unified (CPU+GPU shared) |
+| **Memory Type** | LPDDR5X (unified address space) |
+| **CPU** | ARM Cortex-X925 (10 cores @ 3.9 GHz) + Cortex-A725 (10 cores @ 2.8 GHz) |
+| **Total CPU Cores** | 20 (big.LITTLE) |
+| **Storage** | 916 GB NVMe SSD |
+| **TDP** | ~55-63W (GPU under load) |
 
 ### Software Stack
 
 | Software | Version | Purpose |
 |----------|---------|---------|
-| **ROCm** | 7.2 | AMD's GPU compute platform |
-| **llama.cpp** | Latest (build 8030) | LLM inference engine with HIP/ROCm backend |
-| **Python** | 3.x | Report generation |
-| **Bash** | 4.x+ | Benchmark orchestration |
+| **CUDA** | 13.0 | NVIDIA GPU compute platform |
+| **Driver** | 580.142 | NVIDIA kernel driver |
+| **OS** | Ubuntu 24.04.4 LTS | Operating system |
+| **Kernel** | 6.17.0-1014-nvidia | Linux kernel (NVIDIA variant) |
+| **llama.cpp** | Latest (CUDA backend) | LLM inference engine |
+| **Python** | 3.12 | Report generation |
+| **Bash** | 5.x | Benchmark orchestration |
 
 ### Model Source
 
-- **Location**: USB drive mounted at `/mnt/usb/models/`
+- **Source**: Hugging Face (`Qwen/Qwen2.5-{SIZE}-Instruct-GGUF`)
 - **Format**: GGUF (GPT-Generated Unified Format)
-- **Repository**: Qwen/Qwen2.5-{SIZE}-Instruct-GGUF on Hugging Face
+- **Local storage**: `models/` directory (downloaded via `huggingface-cli` / `hf`)
+- **Note**: 7B+ models are split into multiple shard files; llama.cpp loads them natively from the first shard
 
 ---
 
@@ -106,7 +116,7 @@ We test 4 model sizes from the Qwen2.5-Instruct family:
 | **3B** | 3 billion | Fast, lightweight responses |
 | **7B** | 7 billion | Balanced performance/quality |
 | **14B** | 14 billion | High quality responses |
-| **32B** | 32 billion | Maximum quality (where it fits) |
+| **32B** | 32 billion | Maximum quality |
 
 ### Quantization Levels
 
@@ -116,9 +126,9 @@ We test 4 model sizes from the Qwen2.5-Instruct family:
 |-------|------|-------------|---------|-------|
 | **Q4_K_M** | 4-bit | Smallest (~2GB for 3B) | Good | Fastest |
 | **Q5_K_M** | 5-bit | Medium (~2.3GB for 3B) | Better | Fast |
-| **Q8_0** | 8-bit | Largest (~3.4GB for 3B) | Best | Slower (tested where VRAM allows) |
+| **Q8_0** | 8-bit | Largest (~3.4GB for 3B) | Best | Slower |
 
-**Note**: Q8_0 is only tested when the model fits in 32GB VRAM. For 32B models, Q8 would require ~34GB, so it's automatically skipped.
+**Note**: Unlike the R9700 (32GB VRAM), the GB10's 128GB unified memory fits **all** quantizations for **all** model sizes, including 32B Q8_0 (~34.8GB).
 
 ### Test Types
 
@@ -142,8 +152,6 @@ Text Generation:   128 tokens output (1 test per quantization)
 Repetitions:       3 per test (results are averaged)
 GPU Offload:       All layers on GPU (ngl=99)
 Flash Attention:   Enabled (fa=1)
-Batch Size:        2048 (n_batch)
-Context:           8192 tokens max
 ```
 
 ---
@@ -152,88 +160,111 @@ Context:           8192 tokens max
 
 ### Prerequisites
 
-1. **Mount USB Drive** (contains model files)
+1. **Build llama.cpp** with CUDA support
    ```bash
-   sudo mount /dev/sda1 /mnt/usb
-   ls /mnt/usb/models/  # Verify 11 GGUF files present
+   git clone --depth 1 https://github.com/ggml-org/llama.cpp.git
+   cd llama.cpp
+   cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=native
+   cmake --build build --target llama-bench llama-cli -j$(nproc)
    ```
 
-2. **Verify llama.cpp** is built with ROCm
+2. **Download models** from Hugging Face
    ```bash
-   /path/to/llama.cpp/build/bin/llama-bench --help
-   # Should show "found 1 ROCm devices: ASUS TURBO Radeon AI PRO R9700"
+   pip install --user --break-system-packages huggingface-hub
+   export PATH="$HOME/.local/bin:$PATH"
+
+   cd benchmark-gx10/models
+
+   # 3B (single files)
+   hf download Qwen/Qwen2.5-3B-Instruct-GGUF \
+     qwen2.5-3b-instruct-q4_k_m.gguf \
+     qwen2.5-3b-instruct-q5_k_m.gguf \
+     qwen2.5-3b-instruct-q8_0.gguf --local-dir .
+
+   # 7B (split files)
+   hf download Qwen/Qwen2.5-7B-Instruct-GGUF \
+     qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf \
+     qwen2.5-7b-instruct-q4_k_m-00002-of-00002.gguf \
+     qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf \
+     qwen2.5-7b-instruct-q5_k_m-00002-of-00002.gguf \
+     qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf \
+     qwen2.5-7b-instruct-q8_0-00002-of-00003.gguf \
+     qwen2.5-7b-instruct-q8_0-00003-of-00003.gguf --local-dir .
+
+   # 14B (split files)
+   hf download Qwen/Qwen2.5-14B-Instruct-GGUF \
+     qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf \
+     qwen2.5-14b-instruct-q4_k_m-00002-of-00003.gguf \
+     qwen2.5-14b-instruct-q4_k_m-00003-of-00003.gguf \
+     qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf \
+     qwen2.5-14b-instruct-q5_k_m-00002-of-00003.gguf \
+     qwen2.5-14b-instruct-q5_k_m-00003-of-00003.gguf \
+     qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf \
+     qwen2.5-14b-instruct-q8_0-00002-of-00004.gguf \
+     qwen2.5-14b-instruct-q8_0-00003-of-00004.gguf \
+     qwen2.5-14b-instruct-q8_0-00004-of-00004.gguf --local-dir .
+
+   # 32B (split files — including Q8_0 which fits in 128GB unified memory)
+   hf download Qwen/Qwen2.5-32B-Instruct-GGUF \
+     qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf \
+     qwen2.5-32b-instruct-q4_k_m-00002-of-00005.gguf \
+     qwen2.5-32b-instruct-q4_k_m-00003-of-00005.gguf \
+     qwen2.5-32b-instruct-q4_k_m-00004-of-00005.gguf \
+     qwen2.5-32b-instruct-q4_k_m-00005-of-00005.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00002-of-00006.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00003-of-00006.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00004-of-00006.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00005-of-00006.gguf \
+     qwen2.5-32b-instruct-q5_k_m-00006-of-00006.gguf \
+     qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00002-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00003-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00004-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00005-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00006-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00007-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00008-of-00009.gguf \
+     qwen2.5-32b-instruct-q8_0-00009-of-00009.gguf --local-dir .
    ```
 
-3. **Check Disk Space**
+3. **Verify CUDA**
    ```bash
-   df -h /path/to/benchmark-storage
-   # Need at least 50GB free (largest models: 32B Q5 = 21.7GB)
+   nvidia-smi
+   # Should show: NVIDIA GB10, Driver 580.142, CUDA 13.0
    ```
 
-4. **Set script execute permissions (recommended after clone)**
+4. **Set script execute permissions**
    ```bash
-   chmod +x /path/to/benchmark-rocm/scripts/*.sh
-   chmod +x /path/to/benchmark-rocm/scripts/*.py
+   chmod +x scripts/*.sh scripts/*.py
    ```
-   If you skip this, you can still run scripts via interpreter:
-   ```bash
-   bash scripts/run_benchmark.sh
-   python3 scripts/generate_report.py
-   ```
-
-## Path Portability (Important)
-
-The scripts are currently tied to one Ubuntu server layout. If you run them as-is on another machine, they will fail unless your paths match.
-
-Hardcoded paths currently used:
-
-- Benchmark root: `/home/pendakwahteknologi/benchmark-rocm`
-- llama.cpp binaries: `/home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin`
-- USB model source: `/mnt/usb/models`
-- Disk checks in `check_benchmark.sh`: `/home/pendakwahteknologi/`
-
-Where these appear:
-
-- `scripts/run_benchmark.sh`
-- `scripts/run_interactive_bench.sh`
-- `scripts/run_benchmark_background.sh`
-- `scripts/check_benchmark.sh`
-
-### Make It Work On Your Machine
-
-1. Copy `benchmark-rocm` anywhere you want.
-2. Edit the top path variables in `scripts/run_benchmark.sh`:
-   - `cd ...`
-   - `LLAMA_BENCH=...`
-   - `LLAMA_CLI=...`
-   - `LD_LIBRARY_PATH=...`
-   - `USB_MODEL_DIR=...`
-3. Edit the same path variables in `scripts/run_interactive_bench.sh` (`cd`, `LLAMA_CLI`, `LD_LIBRARY_PATH`, `USB_MODEL_DIR`).
-4. Edit `scripts/run_benchmark_background.sh` so its `cd ...` points to your local `benchmark-rocm`.
-5. Edit absolute paths in `scripts/check_benchmark.sh`:
-   - `df -h /home/pendakwahteknologi/`
-   - model/log paths under `/home/pendakwahteknologi/benchmark-rocm/...`
-
-If you prefer fewer absolute paths, convert scripts to use `SCRIPT_DIR`/`ROOT_DIR` derived from the script location and keep only llama.cpp + USB paths configurable.
 
 ### Directory Structure
 
 ```
-benchmark-rocm/
-├── models/                      # Temporary model storage (auto-managed)
+benchmark-gx10/
+├── models/                      # GGUF model files (downloaded from HF)
 ├── results/                     # Benchmark outputs
-│   ├── benchmark_YYYYMMDD_HHMMSS.csv   # Raw data
-│   ├── benchmark_YYYYMMDD_HHMMSS.json  # Metadata + results
-│   ├── benchmark_YYYYMMDD_HHMMSS.log   # Detailed log
-│   └── benchmark_report.html            # Visual report (generated separately)
-└── scripts/
-    ├── run_benchmark.sh                 # Main benchmark (foreground)
-    ├── run_benchmark_background.sh      # Background runner
-    ├── run_interactive_bench.sh         # Real prompt testing
-    ├── run_token_per_watt_benchmark.sh  # TG throughput vs power efficiency
-    ├── show_token_per_watt_results.sh   # CLI table from token-per-watt CSV
-    ├── check_benchmark.sh               # Status checker
-    └── generate_report.py               # HTML report generator
+│   ├── benchmark_YYYYMMDD_HHMMSS.csv     # Raw throughput data
+│   ├── benchmark_YYYYMMDD_HHMMSS.json    # Metadata + results
+│   ├── benchmark_YYYYMMDD_HHMMSS.log     # Detailed log
+│   ├── benchmark_report_gx10.html        # Visual report
+│   ├── token_per_watt_YYYYMMDD_HHMMSS.csv   # Power efficiency data
+│   ├── token_per_watt_YYYYMMDD_HHMMSS.json  # Power efficiency metadata
+│   └── token_per_watt_YYYYMMDD_HHMMSS.log   # Power efficiency log
+├── scripts/
+│   ├── run_benchmark_gx10.sh             # Main benchmark (CUDA)
+│   ├── run_token_per_watt_gx10.sh        # Power efficiency benchmark (nvidia-smi)
+│   ├── generate_report_gx10.py           # HTML report generator
+│   ├── run_benchmark.sh                  # Original R9700 benchmark (ROCm)
+│   ├── run_benchmark_background.sh       # Original background runner
+│   ├── run_interactive_bench.sh          # Original interactive testing
+│   ├── run_token_per_watt_benchmark.sh   # Original power benchmark (rocm-smi)
+│   ├── show_token_per_watt_results.sh    # CLI table viewer
+│   ├── check_benchmark.sh               # Status checker
+│   └── generate_report.py               # Original HTML report generator
+├── docs/                        # Documentation and reports
+└── README.md
 ```
 
 ---
@@ -243,93 +274,41 @@ benchmark-rocm/
 ### Quick Start
 
 ```bash
-cd /path/to/benchmark-rocm
-bash scripts/run_benchmark.sh
+cd ~/benchmark-gx10
+bash scripts/run_benchmark_gx10.sh
 ```
 
-**Duration**: ~15-20 minutes for all 11 model configurations
-
-### Background Mode (Recommended for SSH)
-
-```bash
-bash scripts/run_benchmark_background.sh
-```
-
-This runs the benchmark in the background so you can:
-- Disconnect from SSH safely
-- Monitor progress with `tail -f results/benchmark_*.log`
-- Check GPU usage with `watch -n 1 rocm-smi`
-
-### Interactive Prompt Benchmark
-
-Use this to run fixed real-world prompts through each model size and supported quantisations with `llama-cli`.
-
-```bash
-bash scripts/run_interactive_bench.sh
-```
-
-This script:
-- Runs unattended (no manual input during execution)
-- Tests 5 built-in prompts across `3B`, `7B`, `14B`, and `32B`
-- Tests quants `Q4_K_M`, `Q5_K_M`, and `Q8_0` where VRAM estimate allows
-- Automatically skips `Q8_0` when estimated VRAM use exceeds `TOTAL_VRAM_GB` (for example 32B)
-- Writes output to:
-  - `results/interactive_bench_YYYYMMDD_HHMMSS.jsonl`
-  - `results/interactive_bench_YYYYMMDD_HHMMSS.log`
-- Cleans up model files after each size
+**Duration**: ~15 minutes for all 12 model configurations
 
 ### Token-Per-Watt Benchmark
 
-Use this benchmark when you want to quantify **generation efficiency** and approximate **electricity cost per token**.
-
 ```bash
-bash scripts/run_token_per_watt_benchmark.sh
+bash scripts/run_token_per_watt_gx10.sh
 ```
+
+**Duration**: ~55 minutes (5 reps x 512 tokens x 12 configs, with power sampling)
 
 This script:
-- Runs TG-only `llama-bench` tests (`-p 0`, `-n <TG_LENGTH>`) across all model sizes and supported quants
-- Samples GPU power repeatedly with `rocm-smi --showpower`
-- Computes:
-  - `tg_tok_sec` (generation speed)
-  - `avg_power_w` (average GPU package power during each run)
-  - `tokens_per_watt` (tok/W)
-  - `joules_per_token`
-  - `sec_per_1k_tokens` (time to generate 1,000 tokens)
-  - `rm_per_1k_tokens` and `rm_per_1m_tokens` (estimated energy cost)
-- Writes output to:
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.csv`
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.json`
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.log`
+- Runs TG-only `llama-bench` tests across all model sizes and quants
+- Samples GPU power every 0.5s with `nvidia-smi --query-gpu=power.draw`
+- Computes: `tok/s`, `tok/W`, `J/token`, `sec/1k tokens`, `RM/1k tokens`
 
-Example with custom electricity rate (MYR):
+Example with custom electricity rate:
 ```bash
-ELECTRICITY_COST_MYR_PER_KWH=0.55 bash scripts/run_token_per_watt_benchmark.sh
+ELECTRICITY_COST_MYR_PER_KWH=0.55 bash scripts/run_token_per_watt_gx10.sh
 ```
 
-### Check Status
+### Generate HTML Report
 
 ```bash
-bash scripts/check_benchmark.sh
+python3 scripts/generate_report_gx10.py
+firefox results/benchmark_report_gx10.html
 ```
 
-Shows:
-- Running processes
-- GPU utilisation
-- Disk space
-- Latest log output (last 30 lines)
-
-### Show Token-Per-Watt Results In CLI
-
-Use this to print a clean table in terminal (good for demos/screen recording):
+### Monitor GPU During Benchmark
 
 ```bash
-bash scripts/show_token_per_watt_results.sh
-```
-
-Or provide a specific CSV:
-
-```bash
-bash scripts/show_token_per_watt_results.sh results/token_per_watt_YYYYMMDD_HHMMSS.csv
+watch -n 1 nvidia-smi
 ```
 
 ---
@@ -340,516 +319,122 @@ bash scripts/show_token_per_watt_results.sh results/token_per_watt_YYYYMMDD_HHMM
 
 During the benchmark, you'll see:
 
-#### 1. **Opening Banner**
+#### 1. Opening Banner
 ```
-     ___                      ___  _____   ____                  _
-    / _ \__      _____ _ __  |__ \| ____| | __ )  ___ _ __   ___| |__
-   | | | \ \ /\ / / _ \ '_ \   ) | |__   |  _ \ / _ \ '_ \ / __| '_ \
-   | |_| |\ V  V /  __/ | | | / /|___ \  | |_) |  __/ | | | (__| | | |
-    \__\_\ \_/\_/ \___|_| |_||____|___/  |____/ \___|_| |_|\_____|_| |_|
-
-===============================================================================
-  GPU          ASUS TURBO Radeon AI PRO R9700
-  Architecture RDNA4 (gfx1201)
-  VRAM         32 GB
-  ROCm         7.2
-  Backend      llama.cpp (HIP/ROCm)
+  GPU          NVIDIA GB10
+  Architecture Blackwell (GB10)
+  Memory       121Gi Unified (CPU+GPU shared)
+  CUDA         13.0
+  Driver       580.142
+  CPU          Cortex-X925
+  Backend      llama.cpp (CUDA)
   Flash Attn   Enabled
 ```
 
-#### 2. **Per-Model Progress**
+#### 2. Per-Model Progress
 ```
-================================================================================
   MODEL 1/4: Qwen2.5-3B-Instruct-GGUF
-  Elapsed: 00:00:00
-================================================================================
 
-     Quantizations: Q4_K_M Q5_K_M Q8_0
+     [1/12] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0 GB)
+     PP: 128, 256, 512 tokens | TG: 128 tokens | Reps: 3
 
-     --- Copying models from USB drive ---
-         COPYING  qwen2.5-3b-instruct-q4_k_m.gguf (2.0 GB) ... done
+         PP  128 tokens  ->  2466.1 tok/s
+         PP  256 tokens  ->  3291.7 tok/s
+         PP  512 tokens  ->  3674.1 tok/s
+         TG  128 tokens  ->    44.1 tok/s
 
-     --- Running benchmarks ---
-
-     [1/11] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0 GB)
-     PP: 128, 256, 512 tokens | TG: 128 tokens | Reps: 3 | Elapsed: 00:00:15
-     Running llama-bench...
-
-         PP  128 tokens  ->  3977.7 tok/s
-         PP  256 tokens  ->  6347.8 tok/s
-         PP  512 tokens  ->  8117.7 tok/s
-         TG  128 tokens  ->   142.9 tok/s
-
-     DONE  Qwen2.5-3B-Instruct-GGUF Q4_K_M (5s)
-```
-
-#### 3. **Final Summary Tables**
-
-**Prompt Processing:**
-```
-  Model                               Quant            PP 128       PP 256       PP 512
-  ---------------------------------------------------------------------------------------------
-  Qwen2.5-3B-Instruct-GGUF           Q4_K_M         3977.7       6347.8       8117.7
-  Qwen2.5-3B-Instruct-GGUF           Q5_K_M         3810.4       6082.4       7729.0
-  Qwen2.5-3B-Instruct-GGUF           Q8_0           1349.7       2274.3       3083.9
-  Qwen2.5-7B-Instruct-GGUF           Q4_K_M         2156.3       3845.6       5432.1
-  ...
-```
-
-**Text Generation:**
-```
-  Model                               Quant            TG 128
-  ------------------------------------------------------------
-  Qwen2.5-3B-Instruct-GGUF           Q4_K_M          142.9
-  Qwen2.5-3B-Instruct-GGUF           Q5_K_M          137.7
-  Qwen2.5-3B-Instruct-GGUF           Q8_0            113.1
-  ...
-```
-
-**Peak Performance:**
-```
-  Prompt Processing   8117.7 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
-  Text Generation      142.9 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
+     DONE  Qwen2.5-3B-Instruct-GGUF Q4_K_M (12s)
 ```
 
 ### Output Files
 
-#### 1. **CSV File** (`benchmark_YYYYMMDD_HHMMSS.csv`)
-Raw data suitable for spreadsheets/analysis:
-
-```csv
-model_size,quant,pp_tokens,pp_tok_sec,tg_tokens,tg_tok_sec,model_file,vram_used_mb
-3B,Q4_K_M,128,3977.732217,0,0,qwen2.5-3b-instruct-q4_k_m.gguf,0
-3B,Q4_K_M,256,6347.781998,0,0,qwen2.5-3b-instruct-q4_k_m.gguf,0
-3B,Q4_K_M,512,8117.655426,0,0,qwen2.5-3b-instruct-q4_k_m.gguf,0
-3B,Q4_K_M,0,0,128,142.894636,qwen2.5-3b-instruct-q4_k_m.gguf,0
-```
-
-**Columns:**
-- `model_size`: 3B, 7B, 14B, 32B
-- `quant`: Q4_K_M, Q5_K_M, Q8_0
-- `pp_tokens`: Prompt processing test size (128, 256, 512) or 0 if TG test
-- `pp_tok_sec`: Prompt processing speed in tokens/second
-- `tg_tokens`: Text generation test size (128) or 0 if PP test
-- `tg_tok_sec`: Text generation speed in tokens/second
-- `model_file`: GGUF filename
-- `vram_used_mb`: Reserved for future use (currently 0)
-
-#### 2. **JSON File** (`benchmark_YYYYMMDD_HHMMSS.json`)
-Structured format with metadata:
-
-```json
-{
-  "metadata": {
-    "gpu": "ASUS TURBO Radeon AI PRO R9700",
-    "arch": "gfx1201 (RDNA4)",
-    "vram_gb": 32,
-    "rocm_version": "7.2",
-    "backend": "llama.cpp (HIP/ROCm)",
-    "timestamp": "2026-02-16T21:40:53+08:00",
-    "pp_lengths": "128,256,512",
-    "tg_length": 128,
-    "repetitions": 3
-  },
-  "results": []
-}
-```
-
-#### 3. **Log File** (`benchmark_YYYYMMDD_HHMMSS.log`)
-Complete execution log including:
-- llama-bench raw CSV output
-- Copy/cleanup operations
-- Timing information
-- Any errors or warnings
-
-#### 4. **HTML Report** (`benchmark_report.html`)
-Interactive visual report with:
-- Bar charts comparing models
-- Summary statistics
-- System specifications
-- Colour-coded performance tiers
-
-Generate with:
-```bash
-python3 scripts/generate_report.py
-```
-
-Then open in browser:
-```bash
-firefox results/benchmark_report.html
-```
+| File | Format | Contents |
+|------|--------|----------|
+| `benchmark_*.csv` | CSV | Raw PP/TG throughput data |
+| `benchmark_*.json` | JSON | Metadata + results |
+| `benchmark_*.log` | Text | Full execution log |
+| `benchmark_report_gx10.html` | HTML | Interactive visual report with charts |
+| `token_per_watt_*.csv` | CSV | Power efficiency data |
+| `token_per_watt_*.json` | JSON | Power efficiency metadata |
 
 ---
 
 ## Script Reference
 
-### Main Scripts
+### GX10-Specific Scripts
 
-#### `run_benchmark.sh`
-**Purpose**: Main synthetic benchmark runner (foreground).
-
-**What it actually does**:
-- Uses `llama-bench` (not `llama-cli`) for PP/TG throughput testing.
-- Tests model sizes `3B, 7B, 14B, 32B`.
-- Tests quants `Q4_K_M`, `Q5_K_M`, and `Q8_0` where VRAM estimate allows.
-- Copies models from `/mnt/usb/models`, benchmarks, then deletes local model files per size.
-- Writes three outputs per run:
-  - `results/benchmark_YYYYMMDD_HHMMSS.csv`
-  - `results/benchmark_YYYYMMDD_HHMMSS.json`
-  - `results/benchmark_YYYYMMDD_HHMMSS.log`
-
-**Hardcoded machine-specific paths**:
-- Yes (`cd`, llama.cpp bin paths, USB path, disk path assumptions).
-
-**Usage**:
-```bash
-bash scripts/run_benchmark.sh
-```
-
----
-
-#### `run_benchmark_background.sh`
-**Purpose**: Convenience wrapper to run `run_benchmark.sh` with `nohup` in background.
-
-**What it actually does**:
-- Changes directory to hardcoded benchmark root.
-- Starts `bash scripts/run_benchmark.sh > results/benchmark_<timestamp>.log 2>&1 &`.
-- Prints PID and tail command.
-
-**Hardcoded machine-specific paths**:
-- Yes (`cd /home/pendakwahteknologi/benchmark-rocm`).
-
-**Usage**:
-```bash
-bash scripts/run_benchmark_background.sh
-```
-
-**Monitoring**:
-```bash
-tail -f results/benchmark_*.log          # Follow log output
-watch -n 1 rocm-smi                       # GPU utilisation
-ps aux | grep run_benchmark               # Check if running
-```
-
----
-
-#### `check_benchmark.sh`
-**Purpose**: Read-only status helper for active/recent benchmark runs.
-
-**What it actually does**:
-- Checks whether `run_benchmark.sh` is running (`pgrep -f`).
-- Prints GPU usage/memory via `rocm-smi`.
-- Prints disk usage.
-- Lists model files currently in the local `models/` folder.
-- Prints last 30 lines of latest benchmark log.
-
-**Hardcoded machine-specific paths**:
-- Yes, strongly. Uses absolute `/home/pendakwahteknologi/...` paths for disk/model/log checks.
-
-**Usage**:
-```bash
-bash scripts/check_benchmark.sh
-```
-
----
-
-#### `run_interactive_bench.sh`
-**Purpose**: Automated prompt-response benchmark with `llama-cli` across model sizes and quantisations.
-
-**What it actually does**:
-- Runs 5 fixed prompts on each size (`3B/7B/14B/32B`).
-- Tests quants `Q4_K_M`, `Q5_K_M`, and `Q8_0` where VRAM fit check allows.
-- Uses the same `Q8_0` skip logic as `run_benchmark.sh` when estimated VRAM exceeds `TOTAL_VRAM_GB`.
-- Copies each model from `/mnt/usb/models` if missing.
-- Captures response preview and timing lines from stderr.
-- Writes:
-  - `results/interactive_bench_YYYYMMDD_HHMMSS.jsonl`
-  - `results/interactive_bench_YYYYMMDD_HHMMSS.log`
-- Removes the model file after each size.
-
-**Human interaction required**:
-- No. It is fully unattended once launched.
-
-**Hardcoded machine-specific paths**:
-- Yes (`cd`, `LLAMA_CLI`, `LD_LIBRARY_PATH`, `USB_MODEL_DIR`).
-
-**Prompt set used**:
-1. "Explain what a GPU is in one paragraph."
-2. "Write a Python function to check if a number is prime."
-3. "What are the main differences between TCP and UDP?"
-4. "Summarise the theory of relativity in simple terms."
-5. "Write a bash script that finds the largest file in a directory."
-
-**Usage**:
-```bash
-bash scripts/run_interactive_bench.sh
-```
-
-**Output**: JSONL file with model size, quant, prompts, responses, and timing
-
----
-
-#### `run_token_per_watt_benchmark.sh`
-**Purpose**: Measure text generation efficiency relative to GPU power draw.
-
-**What it actually does**:
-- Uses `llama-bench` for TG-only runs (default: `TG_LENGTH=512`, `N_REPS=5`).
-- Samples GPU package power with `rocm-smi` during each benchmark run.
-- Calculates:
-  - `tokens_per_watt` (tok/W)
-  - `joules_per_token` (W / tok/s)
-  - `sec_per_1k_tokens`
-  - `wh_per_1k_tokens`
-  - `kwh_per_1m_tokens`
-  - `rm_per_1k_tokens` and `rm_per_1m_tokens` at configurable electricity price.
-- Tests model sizes `3B, 7B, 14B, 32B` and quants `Q4_K_M`, `Q5_K_M`, `Q8_0` where VRAM estimate allows.
-- Copies models from `/mnt/usb/models`, benchmarks, then cleans up per model size.
-- Writes:
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.csv`
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.json`
-  - `results/token_per_watt_YYYYMMDD_HHMMSS.log`
-
-**Machine-specific paths**:
-- Yes for default llama.cpp and USB paths, but this script supports overrides via environment variables.
-
-**Usage**:
-```bash
-bash scripts/run_token_per_watt_benchmark.sh
-```
-
-**Useful overrides**:
-```bash
-LLAMA_BENCH="/path/to/llama-bench" \
-USB_MODEL_DIR="/path/to/models" \
-ELECTRICITY_COST_MYR_PER_KWH=0.55 \
-POWER_SAMPLE_INTERVAL_SEC=0.5 \
-GPU_INDEX=0 \
-MODEL_SIZES_CSV="3B,7B,14B,32B" \
-bash scripts/run_token_per_watt_benchmark.sh
-```
-
-**How to read the output**:
-- `tok/s`: higher is faster.
-- `tok/W`: higher is more energy efficient.
-- `sec/1k tok`: lower is better responsiveness.
-- `RM/1k tok` and `RM/1M tok`: lower is cheaper energy cost.
-
-**Quick learning run** (single model, fastest to understand output):
-```bash
-MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_benchmark.sh
-```
-
----
-
-#### `show_token_per_watt_results.sh`
-**Purpose**: Render token-per-watt CSV results as a terminal-friendly ranked table.
-
-**What it does**:
-- Uses latest `results/token_per_watt_*.csv` by default.
-- Sorts by `tok/W` descending.
-- Prints:
-  - ranked table (`tok/s`, `Avg W`, `tok/W`, `sec/1k`, `RM/1k`)
-  - callouts for fastest, most efficient, and cheapest config
-
-**Usage**:
-```bash
-bash scripts/show_token_per_watt_results.sh
-bash scripts/show_token_per_watt_results.sh results/token_per_watt_YYYYMMDD_HHMMSS.csv
-```
-
----
-
-#### `generate_report.py`
-**Purpose**: Convert latest `benchmark_*.csv` into a single HTML report.
-
-**What it actually does**:
-- Looks for newest `results/benchmark_*.csv`.
-- Parses rows and embeds them into a static HTML template.
-- Writes `results/benchmark_report.html`.
-
-**Important runtime note**:
-- Run this from the `benchmark-rocm` root so `results/` resolves correctly.
-- This script has no hardcoded `/home/...` path; it uses relative `results/`.
-
-**Usage**:
-```bash
-python3 scripts/generate_report.py
-```
-
-**Output**: `results/benchmark_report.html`
-
----
+| Script | Purpose |
+|--------|---------|
+| `run_benchmark_gx10.sh` | Main throughput benchmark (CUDA, nvidia-smi) |
+| `run_token_per_watt_gx10.sh` | Power efficiency benchmark (nvidia-smi power sampling) |
+| `generate_report_gx10.py` | HTML report generator for GX10 results |
 
 ### Configuration Variables
 
-Edit at top of `run_benchmark.sh` and `run_interactive_bench.sh`:
+Edit at top of `run_benchmark_gx10.sh`:
 
 ```bash
-# Benchmark configuration
+LLAMA_BENCH="/home/gx10/llama.cpp/build/bin/llama-bench"
+LLAMA_CLI="/home/gx10/llama.cpp/build/bin/llama-cli"
+MODEL_DIR="$(pwd)/models"
+
 PP_LENGTHS="128,256,512"      # Prompt processing test sizes
 TG_LENGTH=128                  # Text generation test size
 N_REPS=3                       # Repetitions per test (averaged)
-
-# Machine paths (must match your system)
-LLAMA_BENCH="/path/to/llama.cpp/build/bin/llama-bench"
-LLAMA_CLI="/path/to/llama.cpp/build/bin/llama-cli"
-export LD_LIBRARY_PATH="/path/to/llama.cpp/build/bin:$LD_LIBRARY_PATH"
-USB_MODEL_DIR="/mnt/usb/models"
-
-# Model sizes to test
-MODEL_SIZES=("3B" "7B" "14B" "32B")
-
-# VRAM available
-TOTAL_VRAM_GB=32
-
-# VRAM estimates for Q8_0 (auto-skip if exceeds TOTAL_VRAM_GB)
-VRAM_ESTIMATE_Q8["3B"]=4
-VRAM_ESTIMATE_Q8["7B"]=8
-VRAM_ESTIMATE_Q8["14B"]=16
-VRAM_ESTIMATE_Q8["32B"]=34
+TOTAL_VRAM_GB=128              # GB10 unified memory
 ```
 
-For token-per-watt runs (`run_token_per_watt_benchmark.sh`), useful runtime overrides:
-
+For token-per-watt runs:
 ```bash
 TG_LENGTH=512
 N_REPS=5
 POWER_SAMPLE_INTERVAL_SEC=0.5
 GPU_INDEX=0
 ELECTRICITY_COST_MYR_PER_KWH=0.55
-MODEL_SIZES_CSV="3B,7B,14B,32B"
-LLAMA_BENCH="/path/to/llama-bench"
-USB_MODEL_DIR="/mnt/usb/models"
 ```
 
 ---
 
 ## Troubleshooting
 
-### USB Drive Issues
+### CUDA Error on Launch
 
-**Problem**: `ERROR: USB model directory not found at /mnt/usb/models`
+**Problem**: `CUDA error` in `ggml_cuda_mul_mat_q`
 
-**Solution**:
+**Solution**: Rebuild llama.cpp with native architecture:
 ```bash
-# Mount the USB drive
-sudo mount /dev/sda1 /mnt/usb
-
-# Verify models are present
-ls /mnt/usb/models/*.gguf
-# Should show 11 GGUF files
+cd ~/llama.cpp
+cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=native
+cmake --build build --target llama-bench llama-cli -j$(nproc)
 ```
 
----
-
-### Permission Denied On Script Run
-
-**Problem**: Running `./scripts/run_benchmark.sh` (or other scripts) returns `Permission denied`.
-
-**Cause**: Execute bits are missing (for example files show `-rw-rw-r--`).
-
-**Solution**:
-```bash
-chmod +x /path/to/benchmark-rocm/scripts/*.sh
-chmod +x /path/to/benchmark-rocm/scripts/*.py
-```
-
-**Alternative** (without execute bit):
-```bash
-bash scripts/run_benchmark.sh
-bash scripts/run_interactive_bench.sh
-python3 scripts/generate_report.py
-```
-
----
+The GB10 is compute capability 12.1 — using `-DCMAKE_CUDA_ARCHITECTURES=native` ensures correct code generation.
 
 ### Library Not Found
 
 **Problem**: `error while loading shared libraries: libllama.so.0`
 
-**Solution**: The script already sets `LD_LIBRARY_PATH`. If you still see this:
+**Solution**: The script sets `LD_LIBRARY_PATH` automatically. If you still see this:
 ```bash
-export LD_LIBRARY_PATH="/home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/home/gx10/llama.cpp/build/bin:$LD_LIBRARY_PATH"
 ```
 
----
+### No Model Files
 
-### Disk Space
+**Problem**: `ERROR: No .gguf model files found`
 
-**Problem**: "No space left on device" during copy
-
-**Solution**:
-```bash
-# Check free space
-df -h /home/pendakwahteknologi/
-
-# Manual cleanup if needed
-rm -rf ~/benchmark-rocm/models/*.gguf
-```
-
-The script automatically cleans up after each model size, but if interrupted, models may remain.
-
----
+**Solution**: Download models from Hugging Face (see [Setup Instructions](#setup-instructions)).
 
 ### Empty Results Tables
 
-**Problem**: Summary tables show all zeros or are empty
-
-**Causes**:
-1. llama-bench failed to run (check log for errors)
-2. CSV parsing failed (llama-bench output format changed)
+**Problem**: Summary tables show all zeros
 
 **Debug**:
 ```bash
-# Check if CSV has data
-cat results/benchmark_*.csv
-
 # Test llama-bench manually
-LD_LIBRARY_PATH="/home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin:$LD_LIBRARY_PATH" \
-    /home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin/llama-bench \
-    -m /mnt/usb/models/qwen2.5-3b-instruct-q4_k_m.gguf \
+/home/gx10/llama.cpp/build/bin/llama-bench \
+    -m models/qwen2.5-3b-instruct-q4_k_m.gguf \
     -p 128 -n 128 -r 1 -ngl 99 -fa 1 -o csv
-```
-
----
-
-### Model Loading Failures
-
-**Problem**: `main: error: failed to load model`
-
-**Causes**:
-1. Corrupted model file (incomplete copy)
-2. Incompatible GGUF version
-
-**Solution**:
-```bash
-# Remove potentially corrupted file
-rm ~/benchmark-rocm/models/qwen2.5-*.gguf
-
-# Verify source file integrity
-ls -lh /mnt/usb/models/qwen2.5-3b-instruct-q4_k_m.gguf
-# Compare size with successful copies
-
-# Re-run benchmark (will re-copy)
-```
-
----
-
-### ROCm Device Not Found
-
-**Problem**: `ggml_cuda_init: no ROCm devices found`
-
-**Solution**:
-```bash
-# Check ROCm installation
-rocminfo | grep "Name:"
-
-# Check GPU is visible
-rocm-smi
-
-# Verify llama.cpp was built with ROCm
-ldd /home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin/llama-bench | grep hip
-# Should show libamdhip64.so
 ```
 
 ---
@@ -858,129 +443,144 @@ ldd /home/pendakwahteknologi/finetune-rocm-v0/llama.cpp/build/bin/llama-bench | 
 
 ### Custom Model Sizes
 
-To test only specific models, edit `run_benchmark.sh`:
-
 ```bash
 # Test only 3B and 7B
-MODEL_SIZES=("3B" "7B")
+MODEL_SIZES_CSV="3B,7B" bash scripts/run_token_per_watt_gx10.sh
 ```
 
-### Custom Prompt Lengths
+### Quick Learning Run
 
 ```bash
-# Test different prompt sizes
-PP_LENGTHS="64,128,256,512,1024"
-```
-
-### More Repetitions
-
-For more stable results (slower):
-
-```bash
-N_REPS=5  # Instead of 3
-```
-
-### Skip Quantization Levels
-
-Comment out unwanted quants in the loop:
-
-```bash
-# In run_benchmark.sh, around line 389
-quants_to_test=("Q4_K_M")  # Only test Q4
-# quants_to_test=("Q4_K_M" "Q5_K_M")  # Skip Q8
+MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.sh
 ```
 
 ### Parallel Benchmarking
 
-**DO NOT** run multiple benchmarks simultaneously - GPU contention will skew results. Run sequentially.
+**DO NOT** run multiple benchmarks simultaneously — GPU contention will skew results.
 
 ---
 
-## Measured Results (2026-02-17)
+## Measured Results (2026-04-02)
 
-This section records real benchmark output from this project on the test machine.
-
-- **Benchmark report timestamp**: 2026-02-17 12:31:50
-- **Source files**:
-  - `benchmark_report.html`
-  - `SYSTEM_INFO.md`
-- **Published report (clickable)**:
-  - GitHub file view: `https://github.com/pendakwahteknologi/benchmark-rocm/blob/main/docs/reports/benchmark_report_2026-02-17.html`
-  - Raw HTML download: `https://raw.githubusercontent.com/pendakwahteknologi/benchmark-rocm/main/docs/reports/benchmark_report_2026-02-17.html`
-- **Note**: GitHub shows HTML as source. Download/open the raw file in a browser for full visual rendering.
-- **Benchmark mode**: `run_benchmark.sh` (llama-bench, 3 repetitions)
-
-### System Overview (Test Bench)
+### System Overview (GX10)
 
 | Component | Value |
 |----------|-------|
+| **Device** | NVIDIA Project DIGITS (GX10) |
 | **OS** | Ubuntu 24.04.4 LTS |
-| **Kernel** | 6.17.0-14-generic |
-| **ROCm** | 7.2.0 |
-| **Docker** | 29.2.1 |
-| **Python** | 3.12.3 |
-| **CPU** | Intel Core Ultra 7 265K |
-| **CPU Cores** | 20 |
-| **CPU Boost** | Up to 5.6 GHz |
-| **CPU Cache** | 30MB L3 |
-| **GPU (Primary AI Accelerator)** | ASUS TURBO Radeon AI PRO R9700 |
-| **GPU Architecture** | RDNA4 (`gfx1201`) |
-| **GPU VRAM** | 32GB GDDR |
-| **GPU Driver** | amdgpu 6.18.4 |
-| **PCIe Link** | 32.0GT/s x16 |
-| **GPU Max Power** | 300W |
-| **ROCm GPU Support** | Native `gfx1201` support |
-| **Memory** | 46GB DDR5 |
-| **DIMM Configuration** | 2 x 24GB DDR5-8200 |
-| **Memory Speed (running)** | 6400 MT/s |
-| **Storage** | WDC PC SN810 NVMe 512GB |
-| **Inference Backend** | llama.cpp HIP backend |
-| **PyTorch Stack** | PyTorch 2.9.1 ROCm |
-| **HSA Override** | Not required |
-| **Benchmark repetitions** | 3 per configuration |
-
-### Social Badge Text
-
-Use this block for image/footer overlays:
-
-```text
-Powered By
-ASUS TURBO Radeon AI PRO R9700 32GB
-Intel Core Ultra 7 265K
-46GB DDR5
-ROCm 7.2 + llama.cpp HIP
-```
+| **Kernel** | 6.17.0-1014-nvidia |
+| **CUDA** | 13.0 |
+| **Driver** | 580.142 |
+| **GPU** | NVIDIA GB10 |
+| **GPU Architecture** | Blackwell (Compute Capability 12.1) |
+| **GPU Memory** | 128 GB Unified (LPDDR5X, shared with CPU) |
+| **GPU Power (under load)** | 55-63W |
+| **CPU** | ARM Cortex-X925 (10 cores @ 3.9 GHz) + Cortex-A725 (10 cores @ 2.8 GHz) |
+| **CPU Cores** | 20 (big.LITTLE) |
+| **Storage** | 916 GB NVMe SSD |
+| **Inference Backend** | llama.cpp CUDA backend |
+| **Flash Attention** | Enabled |
+| **Benchmark Repetitions** | 3 per configuration |
 
 ### Headline Performance
 
-- **Peak Prompt Processing (PP 512)**: **8124.8 tok/s**  
+- **Peak Prompt Processing (PP 512)**: **3674.1 tok/s**
   `Qwen2.5-3B-Instruct` + `Q4_K_M`
-- **Peak Text Generation (TG 128)**: **143.4 tok/s**  
+- **Peak Text Generation (TG 128)**: **44.1 tok/s**
   `Qwen2.5-3B-Instruct` + `Q4_K_M`
+- **All 12 configurations tested** (including 32B Q8_0)
 
 ### TG 128 Comparison (tok/s)
 
 | Model | Q4_K_M | Q5_K_M | Q8_0 |
 |------|--------|--------|------|
-| **Qwen2.5-3B** | 143.4 | 137.0 | 113.0 |
-| **Qwen2.5-7B** | 103.7 | 93.3 | 69.5 |
-| **Qwen2.5-14B** | 55.0 | 49.3 | 36.2 |
-| **Qwen2.5-32B** | 26.8 | 23.7 | N/A (skipped; VRAM limit) |
+| **Qwen2.5-3B** | 44.1 | 38.0 | 30.9 |
+| **Qwen2.5-7B** | 20.8 | 19.3 | 15.2 |
+| **Qwen2.5-14B** | 11.9 | 9.7 | 7.9 |
+| **Qwen2.5-32B** | 5.4 | 4.6 | 3.4 |
 
 ### PP 512 Comparison (tok/s)
 
 | Model | Q4_K_M | Q5_K_M | Q8_0 |
 |------|--------|--------|------|
-| **Qwen2.5-3B** | 8124.8 | 7737.2 | 3042.0 |
-| **Qwen2.5-7B** | 4006.1 | 3040.4 | 1392.6 |
-| **Qwen2.5-14B** | 2007.7 | 1887.9 | 685.6 |
-| **Qwen2.5-32B** | 901.6 | 854.2 | N/A (skipped; VRAM limit) |
+| **Qwen2.5-3B** | 3674.1 | 3543.8 | 3294.9 |
+| **Qwen2.5-7B** | 951.8 | 1766.5 | 1464.7 |
+| **Qwen2.5-14B** | 918.6 | 807.6 | 659.7 |
+| **Qwen2.5-32B** | 397.7 | 356.9 | 264.4 |
 
-### Notes
+### Token-Per-Watt Efficiency (TG 512, sorted by tok/W)
 
-- For this machine and configuration, `Q4_K_M` was fastest across all tested sizes.
-- `Q8_0` gave lower throughput and, for 32B, did not fit the 32 GB VRAM limit used by the benchmark logic.
-- Results are specific to this system, ROCm version, llama.cpp build, and benchmark settings.
+| Model | Quant | tok/s | Avg W | tok/W | RM/1M tokens |
+|-------|-------|------:|------:|------:|-------------:|
+| 3B | Q4_K_M | 43.2 | 63.5 | **0.681** | RM 0.22 |
+| 3B | Q5_K_M | 37.5 | 63.1 | 0.594 | RM 0.26 |
+| 3B | Q8_0 | 30.7 | 59.0 | 0.519 | RM 0.29 |
+| 7B | Q4_K_M | 21.2 | 61.8 | 0.343 | RM 0.45 |
+| 7B | Q5_K_M | 18.8 | 60.3 | 0.312 | RM 0.49 |
+| 7B | Q8_0 | 14.6 | 55.5 | 0.264 | RM 0.58 |
+| 14B | Q4_K_M | 11.6 | 60.7 | 0.190 | RM 0.80 |
+| 14B | Q5_K_M | 9.8 | 61.4 | 0.159 | RM 0.96 |
+| 14B | Q8_0 | 7.5 | 56.6 | 0.133 | RM 1.15 |
+| 32B | Q4_K_M | 5.4 | 58.8 | 0.092 | RM 1.66 |
+| 32B | Q5_K_M | 4.4 | 58.6 | 0.075 | RM 2.03 |
+| 32B | Q8_0 | 3.3 | 56.6 | 0.059 | RM 2.58 |
+
+### Key Observations
+
+- The GB10 draws **55-63W under load** — very power-efficient for 128GB of unified memory
+- All 12 configurations completed successfully, including **32B Q8_0** (34.8GB)
+- `Q4_K_M` was fastest across all tested sizes
+- Power draw is relatively flat across model sizes (unlike discrete GPUs where larger models draw more power)
+- Electricity cost ranges from RM 0.22/M tokens (3B Q4) to RM 2.58/M tokens (32B Q8)
+
+---
+
+## GX10 vs R9700 Comparison
+
+Side-by-side comparison between the two benchmark machines:
+
+### Hardware
+
+| Spec | GX10 (GB10) | R9700 (RDNA4) |
+|------|-------------|---------------|
+| **GPU** | NVIDIA GB10 (Blackwell) | ASUS TURBO Radeon AI PRO R9700 |
+| **Memory** | 128 GB Unified | 32 GB GDDR6 |
+| **CPU** | ARM Cortex-X925 + A725 (20 cores) | Intel Core Ultra 7 265K (20 cores) |
+| **RAM** | 128 GB (shared) | 46 GB DDR5 |
+| **Compute** | CUDA 13.0 | ROCm 7.2 |
+| **Power (GPU)** | ~55-63W | up to 300W |
+| **PCIe** | Integrated (SoC) | Gen4 x16 |
+
+### Text Generation (TG 128 tok/s)
+
+| Model | GX10 | R9700 | R9700 / GX10 |
+|-------|-----:|------:|-------------:|
+| 3B Q4_K_M | 44.1 | 143.4 | 3.3x faster |
+| 7B Q4_K_M | 20.8 | 103.7 | 5.0x faster |
+| 14B Q4_K_M | 11.9 | 55.0 | 4.6x faster |
+| 32B Q4_K_M | 5.4 | 26.8 | 5.0x faster |
+| 32B Q8_0 | 3.4 | N/A | GX10 only |
+
+### Prompt Processing (PP 512 tok/s)
+
+| Model | GX10 | R9700 | R9700 / GX10 |
+|-------|-----:|------:|-------------:|
+| 3B Q4_K_M | 3674.1 | 8124.8 | 2.2x faster |
+| 7B Q4_K_M | 951.8 | 4006.1 | 4.2x faster |
+| 14B Q4_K_M | 918.6 | 2007.7 | 2.2x faster |
+| 32B Q4_K_M | 397.7 | 901.6 | 2.3x faster |
+
+### Summary
+
+| Category | Winner | Notes |
+|----------|--------|-------|
+| **Raw Speed** | R9700 | 2-5x faster across all sizes |
+| **Memory Capacity** | GX10 | 128GB unified vs 32GB discrete |
+| **32B Q8_0 Support** | GX10 | R9700 cannot fit 34.8GB model |
+| **Power Efficiency** | GX10 | ~60W vs up to 300W |
+| **Form Factor** | GX10 | Compact SoC vs desktop GPU |
+
+The R9700 is the clear winner for raw inference speed, while the GX10 excels in power efficiency and can run larger models that don't fit in 32GB VRAM.
 
 ---
 
@@ -989,16 +589,16 @@ ROCm 7.2 + llama.cpp HIP
 ### What's "Good" Performance?
 
 **Prompt Processing (PP)**:
-- **>5000 tok/s**: Excellent - instant prompt understanding
-- **3000-5000 tok/s**: Good - barely noticeable delay
-- **1000-3000 tok/s**: Acceptable - slight delay
-- **<1000 tok/s**: Slow - noticeable wait time
+- **>3000 tok/s**: Excellent - instant prompt understanding
+- **1000-3000 tok/s**: Good - barely noticeable delay
+- **500-1000 tok/s**: Acceptable - slight delay
+- **<500 tok/s**: Slow - noticeable wait time
 
 **Text Generation (TG)**:
-- **>100 tok/s**: Excellent - feels instant (typical reading speed ~200 tok/s)
-- **50-100 tok/s**: Good - smooth experience
-- **20-50 tok/s**: Acceptable - slight lag
-- **<20 tok/s**: Slow - noticeable typing delay
+- **>40 tok/s**: Excellent - faster than reading speed
+- **20-40 tok/s**: Good - smooth experience
+- **10-20 tok/s**: Acceptable - usable for chat
+- **<10 tok/s**: Slow - noticeable lag
 
 ### Trade-offs
 
@@ -1006,158 +606,43 @@ ROCm 7.2 + llama.cpp HIP
 |--------|---------|---------|------|
 | **Speed** | Fastest | Fast | Slower |
 | **Quality** | Good | Better | Best |
-| **VRAM** | Lowest | Medium | Highest |
-| **Size** | Smallest | Medium | Largest |
+| **Memory** | Lowest | Medium | Highest |
 
-**Recommendation**: Q4_K_M for most use cases - offers best speed/quality balance.
+**Recommendation**: Q4_K_M for most use cases — offers best speed/quality balance on the GB10.
 
-### Model Size Trade-offs
+---
 
-| Size | Speed | Quality | Use When |
-|------|-------|---------|----------|
-| **3B** | Fastest | Good | Need maximum speed, simple tasks |
-| **7B** | Fast | Better | General-purpose, balanced needs |
-| **14B** | Slower | Great | Complex reasoning, quality matters |
-| **32B** | Slowest | Best | Maximum quality, can tolerate latency |
+## Models & Quantizations
+
+| Model | Quant | Est. Size | Fits GB10 | Shard Files |
+|-------|-------|-----------|-----------|-------------|
+| Qwen2.5-3B-Instruct | Q4_K_M | ~2.0 GB | Yes | 1 |
+| Qwen2.5-3B-Instruct | Q5_K_M | ~2.3 GB | Yes | 1 |
+| Qwen2.5-3B-Instruct | Q8_0 | ~3.4 GB | Yes | 1 |
+| Qwen2.5-7B-Instruct | Q4_K_M | ~4.4 GB | Yes | 2 |
+| Qwen2.5-7B-Instruct | Q5_K_M | ~5.1 GB | Yes | 2 |
+| Qwen2.5-7B-Instruct | Q8_0 | ~7.8 GB | Yes | 3 |
+| Qwen2.5-14B-Instruct | Q4_K_M | ~8.7 GB | Yes | 3 |
+| Qwen2.5-14B-Instruct | Q5_K_M | ~10.1 GB | Yes | 3 |
+| Qwen2.5-14B-Instruct | Q8_0 | ~15.3 GB | Yes | 4 |
+| Qwen2.5-32B-Instruct | Q4_K_M | ~19.5 GB | Yes | 5 |
+| Qwen2.5-32B-Instruct | Q5_K_M | ~22.7 GB | Yes | 6 |
+| Qwen2.5-32B-Instruct | Q8_0 | ~34.8 GB | **Yes** | 9 |
+
+All 12 configurations fit in the GB10's 128GB unified memory.
 
 ---
 
 ## Citation & Credits
 
-**GPU**: ASUS TURBO Radeon AI PRO R9700 (RDNA4 / gfx1201)
+**GPU**: NVIDIA GB10 (Blackwell, Project DIGITS)
+**Original Benchmark**: [pendakwahteknologi/benchmark-rocm](https://github.com/pendakwahteknologi/benchmark-rocm) (AMD R9700 / ROCm)
 **Models**: Qwen2.5-Instruct by Alibaba Cloud (Hugging Face: Qwen/Qwen2.5-{SIZE}-Instruct-GGUF)
-**Inference Engine**: llama.cpp by ggerganov (HIP/ROCm backend)
-**Compute Platform**: ROCm 7.2 by AMD
+**Inference Engine**: llama.cpp by ggerganov (CUDA backend)
+**Compute Platform**: CUDA 13.0 by NVIDIA
 
 ---
 
 ## License
 
 This benchmark suite is provided as-is for educational and evaluation purposes.
-
----
-
-## Support
-
-For issues or questions:
-1. Check the [Troubleshooting](#troubleshooting) section
-2. Review log files in `results/`
-3. Test individual components manually
-4. Ensure all prerequisites are met
-
-**Happy Benchmarking! 🚀**
-
-
----
-
-# Qwen2.5 Instruct GGUF Models for Benchmarking
-
-## Hardware Target
-
-- **GPU:** ASUS TURBO Radeon AI PRO R9700 (RDNA4, gfx1201)
-- **VRAM:** 32 GB
-- **Backend:** llama.cpp with HIP/ROCm 7.2
-
-## Models & Quantizations
-
-| Model | Quant | Est. Size | Fits VRAM | Source |
-|-------|-------|-----------|-----------|--------|
-| Qwen2.5-3B-Instruct | Q4_K_M | ~2.1 GB | Yes | Official |
-| Qwen2.5-3B-Instruct | Q5_K_M | ~2.4 GB | Yes | Official |
-| Qwen2.5-3B-Instruct | Q8_0 | ~3.6 GB | Yes | Official |
-| Qwen2.5-7B-Instruct | Q4_K_M | ~4.7 GB | Yes | Official |
-| Qwen2.5-7B-Instruct | Q5_K_M | ~5.4 GB | Yes | Official |
-| Qwen2.5-7B-Instruct | Q8_0 | ~8.1 GB | Yes | Official |
-| Qwen2.5-14B-Instruct | Q4_K_M | ~9.0 GB | Yes | Official |
-| Qwen2.5-14B-Instruct | Q5_K_M | ~10.5 GB | Yes | Official |
-| Qwen2.5-14B-Instruct | Q8_0 | ~15.7 GB | Yes | Official |
-| Qwen2.5-32B-Instruct | Q4_K_M | ~19.9 GB | Yes | Official |
-| Qwen2.5-32B-Instruct | Q5_K_M | ~23.8 GB | Yes | Official |
-| Qwen2.5-32B-Instruct | Q8_0 | ~34.8 GB | **No** (exceeds 32GB) | Community |
-
-## Download Links
-
-### Qwen2.5-3B-Instruct-GGUF (Official)
-
-- **Repository:** https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF
-- **Files (single file per quant):**
-  - `qwen2.5-3b-instruct-q4_k_m.gguf` (~2.1 GB)
-  - `qwen2.5-3b-instruct-q5_k_m.gguf` (~2.4 GB)
-  - `qwen2.5-3b-instruct-q8_0.gguf` (~3.6 GB)
-
-### Qwen2.5-7B-Instruct-GGUF (Official)
-
-- **Repository:** https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF
-- **Files (split — requires merge after download):**
-  - Q4_K_M: `qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf` + `...00002-of-00002.gguf` (~4.7 GB total)
-  - Q5_K_M: `qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf` + `...00002-of-00002.gguf` (~5.4 GB total)
-  - Q8_0: `qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf` + 2 more parts (~8.1 GB total)
-
-### Qwen2.5-14B-Instruct-GGUF (Official)
-
-- **Repository:** https://huggingface.co/Qwen/Qwen2.5-14B-Instruct-GGUF
-- **Files (split — requires merge after download):**
-  - Q4_K_M: 3 parts `qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf` ... (~9.0 GB total)
-  - Q5_K_M: 3 parts `qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf` ... (~10.5 GB total)
-  - Q8_0: 4 parts `qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf` ... (~15.7 GB total)
-
-### Qwen2.5-32B-Instruct-GGUF (Official)
-
-- **Repository:** https://huggingface.co/Qwen/Qwen2.5-32B-Instruct-GGUF
-- **Files (split — requires merge after download):**
-  - Q4_K_M: 5 parts `qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf` ... (~19.9 GB total)
-  - Q5_K_M: 6 parts `qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf` ... (~23.8 GB total)
-  - Q8_0: **Skipped** — ~34.8 GB exceeds 32 GB VRAM
-
-## Important Notes
-
-### Split GGUF Files (7B, 14B, 32B)
-
-Models 7B and above have their GGUF files **split into multiple parts** due to Hugging Face file size limits. After downloading, they must be merged:
-
-```bash
-# llama-gguf-split is included in the llama.cpp build
-llama-gguf-split --merge qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf qwen2.5-7b-instruct-q4_k_m.gguf
-```
-
-The benchmark script (`run_benchmark.sh`) handles this automatically.
-
-### Disk Space Strategy
-
-Since storage is limited, the benchmark script:
-
-1. Downloads all quant files for **one model size** at a time
-2. Runs all benchmarks for that size
-3. **Deletes** all files for that size
-4. Moves to the next model size
-
-Peak disk usage per model size:
-
-| Model Size | Peak Disk (all 3 quants) |
-|------------|--------------------------|
-| 3B | ~8.1 GB |
-| 7B | ~18.2 GB |
-| 14B | ~35.2 GB |
-| 32B | ~43.7 GB (Q4+Q5 only) |
-
-### 32B Q8_0 — Skipped
-
-The Q8_0 quantization of Qwen2.5-32B requires ~34.8 GB, which exceeds the 32 GB VRAM on the R9700. This configuration is automatically skipped by the benchmark script.
-
-A community-quantized version exists at https://huggingface.co/bartowski/Qwen2.5-32B-Instruct-GGUF but is not used since it cannot run fully on GPU.
-
-## Download Commands (Manual)
-
-```bash
-# 3B (single files)
-huggingface-cli download Qwen/Qwen2.5-3B-Instruct-GGUF qwen2.5-3b-instruct-q4_k_m.gguf --local-dir ./models
-
-# 7B (split files — download all parts)
-huggingface-cli download Qwen/Qwen2.5-7B-Instruct-GGUF --include "qwen2.5-7b-instruct-q4_k_m-*" --local-dir ./models
-
-# 14B (split files)
-huggingface-cli download Qwen/Qwen2.5-14B-Instruct-GGUF --include "qwen2.5-14b-instruct-q4_k_m-*" --local-dir ./models
-
-# 32B (split files)
-huggingface-cli download Qwen/Qwen2.5-32B-Instruct-GGUF --include "qwen2.5-32b-instruct-q4_k_m-*" --local-dir ./models
-```

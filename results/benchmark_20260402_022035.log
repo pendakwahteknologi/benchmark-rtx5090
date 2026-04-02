@@ -1,0 +1,279 @@
+[INFO] Benchmark started at Thu Apr  2 02:20:37 AM +08 2026
+[INFO] GPU: NVIDIA GB10
+[INFO] CUDA: 13.0 | Driver: 580.142
+[INFO] CPU: Cortex-X925
+[INFO] Memory: 121Gi Unified
+
+================================================================================
+ MODEL 1/4: Qwen2.5-3B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:20:39Z","52803486","8524835","2466.147311","392.470581"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:20:39Z","78612260","10217553","3291.746144","407.498322"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:20:39Z","139994874","11363254","3674.117969","311.294888"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:20:40Z","2901397515","33111992","44.120479","0.500509"
+
+         PP 128 tokens -> 2466.147311 tok/s
+         PP 256 tokens -> 3291.746144 tok/s
+         PP 512 tokens -> 3674.117969 tok/s
+         TG 128 tokens -> 44.120479 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q4_K_M (11s)
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q5_K_M (2.3GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:20:51Z","56961766","15510982","2350.232501","570.504637"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:20:51Z","83163593","10276417","3107.975436","360.748776"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:20:51Z","145208141","12864895","3543.832983","302.555413"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:20:52Z","3368979432","40052147","37.997304","0.454442"
+
+         PP 128 tokens -> 2350.232501 tok/s
+         PP 256 tokens -> 3107.975436 tok/s
+         PP 512 tokens -> 3543.832983 tok/s
+         TG 128 tokens -> 37.997304 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q5_K_M (13s)
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q8_0 (3.4GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:21:04Z","63985562","9325749","2030.911039","314.110447"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:21:04Z","95408139","7156857","2693.010696","196.087400"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:21:05Z","156281352","14658738","3294.910349","300.441398"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:21:05Z","4140608954","14016190","30.913563","0.104577"
+
+         PP 128 tokens -> 2030.911039 tok/s
+         PP 256 tokens -> 2693.010696 tok/s
+         PP 512 tokens -> 3294.910349 tok/s
+         TG 128 tokens -> 30.913563 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q8_0 (16s)
+================================================================================
+ MODEL 2/4: Qwen2.5-7B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:21:20Z","148555243","7943459","863.330198","47.629611"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:21:20Z","262019642","11047346","978.198654","41.729490"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:21:21Z","537951857","5379054","951.821417","9.509074"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:21:24Z","6184673303","644608930","20.838765","2.050048"
+
+         PP 128 tokens -> 863.330198 tok/s
+         PP 256 tokens -> 978.198654 tok/s
+         PP 512 tokens -> 951.821417 tok/s
+         TG 128 tokens -> 20.838765 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q4_K_M (24s)
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:21:46Z","91735910","2803296","1396.167422","42.108578"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:21:46Z","144860795","14616025","1778.755562","171.697271"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:21:47Z","290210271","12845731","1766.507960","76.937540"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:21:48Z","6638768251","5443881","19.280694","0.015812"
+
+         PP 128 tokens -> 1396.167422 tok/s
+         PP 256 tokens -> 1778.755562 tok/s
+         PP 512 tokens -> 1766.507960 tok/s
+         TG 128 tokens -> 19.280694 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q5_K_M (26s)
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:22:16Z","108206635","5436313","1184.906148","59.266915"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:22:16Z","179448021","17706940","1436.376029","148.736880"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:22:17Z","349581059","3073450","1464.685477","12.836384"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:22:18Z","8433806148","42287778","15.177269","0.076165"
+
+         PP 128 tokens -> 1184.906148 tok/s
+         PP 256 tokens -> 1436.376029 tok/s
+         PP 512 tokens -> 1464.685477 tok/s
+         TG 128 tokens -> 15.177269 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q8_0 (36s)
+================================================================================
+ MODEL 3/4: Qwen2.5-14B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:22:50Z","158034205","15536207","815.521921","84.997492"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:22:51Z","269489142","13522056","951.536006","47.566601"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:22:52Z","557379773","3696577","918.610661","6.087756"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:22:55Z","10716042567","37811037","11.944807","0.042118"
+
+         PP 128 tokens -> 815.521921 tok/s
+         PP 256 tokens -> 951.536006 tok/s
+         PP 512 tokens -> 918.610661 tok/s
+         TG 128 tokens -> 11.944807 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q4_K_M (43s)
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:23:42Z","170137705","5818745","752.930698","26.268946"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:23:43Z","305903754","12533516","837.813139","34.736541"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:23:44Z","634328973","17847916","807.573340","22.455117"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:23:47Z","13199206541","71917902","9.697745","0.052881"
+
+         PP 128 tokens -> 752.930698 tok/s
+         PP 256 tokens -> 837.813139 tok/s
+         PP 512 tokens -> 807.573340 tok/s
+         TG 128 tokens -> 9.697745 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q5_K_M (60s)
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:24:40Z","200959249","6211983","637.344095","19.363876"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:24:41Z","384505103","11630913","666.190413","19.811091"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:24:42Z","776141116","8310542","659.724578","7.106198"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:24:46Z","16225682608","66236499","7.888816","0.032180"
+
+         PP 128 tokens -> 637.344095 tok/s
+         PP 256 tokens -> 666.190413 tok/s
+         PP 512 tokens -> 659.724578 tok/s
+         TG 128 tokens -> 7.888816 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q8_0 (68s)
+================================================================================
+ MODEL 4/4: Qwen2.5-32B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:26:00Z","326310481","15564649","392.845260","18.265857"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:26:01Z","636838310","10452927","402.057635","6.558866"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:26:04Z","1287356887","14468226","397.747402","4.443330"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:26:09Z","23704234871","128720606","5.399985","0.029378"
+
+         PP 128 tokens -> 392.845260 tok/s
+         PP 256 tokens -> 402.057635 tok/s
+         PP 512 tokens -> 397.747402 tok/s
+         TG 128 tokens -> 5.399985 tok/s
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q4_K_M (106s)
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:27:46Z","352133479","14361479","363.892821","14.501927"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:27:47Z","725058115","13576408","353.158525","6.679471"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:27:50Z","1434627676","10395203","356.899562","2.595856"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:27:56Z","27628759364","161561438","4.632959","0.027028"
+
+         PP 128 tokens -> 363.892821 tok/s
+         PP 256 tokens -> 353.158525 tok/s
+         PP 512 tokens -> 356.899562 tok/s
+         TG 128 tokens -> 4.632959 tok/s
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q5_K_M (119s)
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 124546 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 124546 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf","qwen2 32B Q8_0","34814906368","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-01T18:32:50Z","497521654","5700367","257.297632","2.932400"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf","qwen2 32B Q8_0","34814906368","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-01T18:32:52Z","991434690","9220103","258.226515","2.395655"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf","qwen2 32B Q8_0","34814906368","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-01T18:32:56Z","1936564877","12699510","264.393267","1.738036"
+"6de97b9","1","CPU","NVIDIA GB10","CUDA","/home/gx10/benchmark-rocm/models/qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf","qwen2 32B Q8_0","34814906368","32763876352","2048","512","20","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-01T18:33:04Z","37343275747","52205001","3.427663","0.004789"
+
+         PP 128 tokens -> 257.297632 tok/s
+         PP 256 tokens -> 258.226515 tok/s
+         PP 512 tokens -> 264.393267 tok/s
+         TG 128 tokens -> 3.427663 tok/s
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q8_0 (337s)
+
+================================================================================
+ BENCHMARK COMPLETE - Total time: 00:14:22
+================================================================================
+
+ NVIDIA GB10 (Blackwell GB10) | 121Gi Unified | CUDA 13.0
+ llama.cpp (CUDA) | Flash Attention ON | All layers on GPU
+
+  PROMPT PROCESSING (tok/s)
+  -----------------------------------------------------------------------------------------------------------
+  Model                               Quant            PP 128       PP 256       PP 512
+  -----------------------------------------------------------------------------------------------------------
+  Qwen2.5-3B-Instruct-GGUF            Q4_K_M           2466.1       3291.7       3674.1
+  Qwen2.5-3B-Instruct-GGUF            Q5_K_M           2350.2       3108.0       3543.8
+  Qwen2.5-3B-Instruct-GGUF            Q8_0             2030.9       2693.0       3294.9
+  Qwen2.5-7B-Instruct-GGUF            Q4_K_M            863.3        978.2        951.8
+  Qwen2.5-7B-Instruct-GGUF            Q5_K_M           1396.2       1778.8       1766.5
+  Qwen2.5-7B-Instruct-GGUF            Q8_0             1184.9       1436.4       1464.7
+  Qwen2.5-14B-Instruct-GGUF           Q4_K_M            815.5        951.5        918.6
+  Qwen2.5-14B-Instruct-GGUF           Q5_K_M            752.9        837.8        807.6
+  Qwen2.5-14B-Instruct-GGUF           Q8_0              637.3        666.2        659.7
+  Qwen2.5-32B-Instruct-GGUF           Q4_K_M            392.8        402.1        397.7
+  Qwen2.5-32B-Instruct-GGUF           Q5_K_M            363.9        353.2        356.9
+  Qwen2.5-32B-Instruct-GGUF           Q8_0              257.3        258.2        264.4
+  -----------------------------------------------------------------------------------------------------------
+
+  TEXT GENERATION (tok/s)
+  -----------------------------------------------------------------------------------------------------------
+  Model                               Quant            TG 128
+  -----------------------------------------------------------------------------------------------------------
+  Qwen2.5-3B-Instruct-GGUF            Q4_K_M             44.1
+  Qwen2.5-3B-Instruct-GGUF            Q5_K_M             38.0
+  Qwen2.5-3B-Instruct-GGUF            Q8_0               30.9
+  Qwen2.5-7B-Instruct-GGUF            Q4_K_M             20.8
+  Qwen2.5-7B-Instruct-GGUF            Q5_K_M             19.3
+  Qwen2.5-7B-Instruct-GGUF            Q8_0               15.2
+  Qwen2.5-14B-Instruct-GGUF           Q4_K_M             11.9
+  Qwen2.5-14B-Instruct-GGUF           Q5_K_M              9.7
+  Qwen2.5-14B-Instruct-GGUF           Q8_0                7.9
+  Qwen2.5-32B-Instruct-GGUF           Q4_K_M              5.4
+  Qwen2.5-32B-Instruct-GGUF           Q5_K_M              4.6
+  Qwen2.5-32B-Instruct-GGUF           Q8_0                3.4
+  -----------------------------------------------------------------------------------------------------------
+
+  PEAK PROMPT PROCESSING:  3674.1 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
+  PEAK TEXT GENERATION:    44.1 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
+
+================================================================================
+ Results saved to:
+   CSV:  /home/gx10/benchmark-rocm/results/benchmark_20260402_022035.csv
+   JSON: /home/gx10/benchmark-rocm/results/benchmark_20260402_022035.json
+   Log:  /home/gx10/benchmark-rocm/results/benchmark_20260402_022035.log
+================================================================================
