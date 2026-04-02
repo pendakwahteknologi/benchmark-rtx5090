@@ -8,7 +8,7 @@
     "driver_version": "580.142",
     "cpu": "Cortex-X925",
     "backend": "llama.cpp (CUDA)",
-    "timestamp": "2026-04-02T02:20:37+08:00",
+    "timestamp": "2026-04-02T23:19:30+08:00",
     "pp_lengths": "128,256,512",
     "tg_length": 128,
     "repetitions": 3

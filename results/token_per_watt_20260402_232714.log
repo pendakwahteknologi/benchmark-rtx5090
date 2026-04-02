@@ -1,0 +1,12 @@
+[INFO] Token-per-watt benchmark started at Thu Apr  2 11:27:14 PM +08 2026
+[INFO] GPU: NVIDIA GB10 | CUDA: 13.0 | Driver: 580.142
+[INFO] Config: TG_LENGTH=512, N_REPS=5, POWER_SAMPLE_INTERVAL_SEC=0.5, GPU_INDEX=0
+
+================================================================================
+ MODEL 1/4: Qwen2.5-3B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0GB)
+           TG: 512 tokens | Reps: 5
+

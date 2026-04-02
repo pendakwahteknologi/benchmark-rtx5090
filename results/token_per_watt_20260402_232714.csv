@@ -1,0 +1,1 @@
+model_size,quant,tg_tokens,tg_tok_sec,avg_power_w,min_power_w,max_power_w,power_samples,tokens_per_watt,joules_per_token,sec_per_1k_tokens,wh_per_1k_tokens,kwh_per_1m_tokens,rm_per_1k_tokens,rm_per_1m_tokens,electricity_cost_myr_per_kwh,model_file,bench_seconds

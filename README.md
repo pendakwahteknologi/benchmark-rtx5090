@@ -16,7 +16,7 @@ Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14
 - [Script Reference](#script-reference)
 - [Troubleshooting](#troubleshooting)
 - [Advanced Usage](#advanced-usage)
-- [Measured Results (2026-04-02)](#measured-results-2026-04-02)
+- [Measured Results (2026-04-03)](#measured-results-2026-04-03)
 ---
 
 ## Overview
@@ -84,7 +84,7 @@ bash scripts/run_benchmark_gx10.sh
 | **Connectivity** | HDMI 2.1b, DisplayPort 2.1, USB 3.2 Gen 2x2 Type-C |
 | **Dimensions** | 282.4 x 187.7 x 56.5 mm |
 | **Cooling** | Vapor chamber with dual-fan, 7-level thermal control |
-| **Power (GPU under load)** | ~55-63W |
+| **Power (GPU under load)** | ~33-47W |
 
 ### Software Stack
 
@@ -455,7 +455,7 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 
 ---
 
-## Measured Results (2026-04-02)
+## Measured Results (2026-04-03)
 
 ### System Overview (ASUS Ascent GX10)
 
@@ -472,7 +472,7 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 | **AI Performance** | Up to 1 PFLOP (FP4) |
 | **Memory** | 128 GB LPDDR5X Coherent Unified (CPU+GPU shared) |
 | **CPU-GPU Interconnect** | NVLink-C2C |
-| **GPU Power (under load)** | 55-63W |
+| **GPU Power (under load)** | ~33-47W |
 | **CPU** | 20-core ARM (Cortex-X925 + Cortex-A725, big.LITTLE) |
 | **Storage** | 916 GB NVMe SSD |
 | **Dimensions** | 282.4 x 187.7 x 56.5 mm |
@@ -482,54 +482,59 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 
 ### Headline Performance
 
-- **Peak Prompt Processing (PP 512)**: **3674.1 tok/s**
+- **Peak Prompt Processing (PP 512)**: **6761.8 tok/s**
   `Qwen2.5-3B-Instruct` + `Q4_K_M`
-- **Peak Text Generation (TG 128)**: **44.1 tok/s**
+- **Peak Text Generation (TG 128)**: **94.4 tok/s**
+  `Qwen2.5-3B-Instruct` + `Q4_K_M`
+- **Best Energy Efficiency**: **2.62 tok/W**
   `Qwen2.5-3B-Instruct` + `Q4_K_M`
 - **All 12 configurations tested** (including 32B Q8_0)
 
-### TG 128 Comparison (tok/s)
+### TG 128 — Text Generation Speed (tok/s)
 
 | Model | Q4_K_M | Q5_K_M | Q8_0 |
 |------|--------|--------|------|
-| **Qwen2.5-3B** | 44.1 | 38.0 | 30.9 |
-| **Qwen2.5-7B** | 20.8 | 19.3 | 15.2 |
-| **Qwen2.5-14B** | 11.9 | 9.7 | 7.9 |
-| **Qwen2.5-32B** | 5.4 | 4.6 | 3.4 |
+| **Qwen2.5-3B** | **94.4** | 81.3 | 63.7 |
+| **Qwen2.5-7B** | 44.0 | 37.2 | 28.7 |
+| **Qwen2.5-14B** | 22.8 | 18.8 | 14.2 |
+| **Qwen2.5-32B** | 9.7 | 8.5 | 6.3 |
 
-### PP 512 Comparison (tok/s)
+### PP 512 — Prompt Processing Speed (tok/s)
 
 | Model | Q4_K_M | Q5_K_M | Q8_0 |
 |------|--------|--------|------|
-| **Qwen2.5-3B** | 3674.1 | 3543.8 | 3294.9 |
-| **Qwen2.5-7B** | 951.8 | 1766.5 | 1464.7 |
-| **Qwen2.5-14B** | 918.6 | 807.6 | 659.7 |
-| **Qwen2.5-32B** | 397.7 | 356.9 | 264.4 |
+| **Qwen2.5-3B** | **6761.8** | 6583.2 | 5790.4 |
+| **Qwen2.5-7B** | 3424.1 | 3222.5 | 2581.6 |
+| **Qwen2.5-14B** | 1672.2 | 1474.4 | 1167.0 |
+| **Qwen2.5-32B** | 705.3 | 619.9 | 492.2 |
 
 ### Token-Per-Watt Efficiency (TG 512, sorted by tok/W)
 
 | Model | Quant | tok/s | Avg W | tok/W | RM/1M tokens |
 |-------|-------|------:|------:|------:|-------------:|
-| 3B | Q4_K_M | 43.2 | 63.5 | **0.681** | RM 0.22 |
-| 3B | Q5_K_M | 37.5 | 63.1 | 0.594 | RM 0.26 |
-| 3B | Q8_0 | 30.7 | 59.0 | 0.519 | RM 0.29 |
-| 7B | Q4_K_M | 21.2 | 61.8 | 0.343 | RM 0.45 |
-| 7B | Q5_K_M | 18.8 | 60.3 | 0.312 | RM 0.49 |
-| 7B | Q8_0 | 14.6 | 55.5 | 0.264 | RM 0.58 |
-| 14B | Q4_K_M | 11.6 | 60.7 | 0.190 | RM 0.80 |
-| 14B | Q5_K_M | 9.8 | 61.4 | 0.159 | RM 0.96 |
-| 14B | Q8_0 | 7.5 | 56.6 | 0.133 | RM 1.15 |
-| 32B | Q4_K_M | 5.4 | 58.8 | 0.092 | RM 1.66 |
-| 32B | Q5_K_M | 4.4 | 58.6 | 0.075 | RM 2.03 |
-| 32B | Q8_0 | 3.3 | 56.6 | 0.059 | RM 2.58 |
+| 3B | Q4_K_M | 95.9 | 36.6 | **2.620** | RM 0.06 |
+| 3B | Q5_K_M | 82.5 | 37.5 | 2.201 | RM 0.07 |
+| 3B | Q8_0 | 64.0 | 32.7 | 1.960 | RM 0.08 |
+| 7B | Q4_K_M | 44.3 | 40.0 | 1.108 | RM 0.14 |
+| 7B | Q5_K_M | 37.4 | 39.7 | 0.942 | RM 0.16 |
+| 7B | Q8_0 | 28.7 | 33.4 | 0.860 | RM 0.18 |
+| 14B | Q4_K_M | 22.8 | 41.5 | 0.550 | RM 0.28 |
+| 14B | Q8_0 | 14.2 | 32.6 | 0.436 | RM 0.35 |
+| 14B | Q5_K_M | 18.7 | 47.1 | 0.397 | RM 0.38 |
+| 32B | Q4_K_M | 10.1 | 44.3 | 0.229 | RM 0.67 |
+| 32B | Q5_K_M | 8.5 | 42.4 | 0.200 | RM 0.76 |
+| 32B | Q8_0 | 6.3 | 42.8 | 0.148 | RM 1.03 |
 
 ### Key Observations
 
-- The ASUS Ascent GX10 draws **55-63W under load** — very power-efficient for a 128GB unified memory AI supercomputer
+- The ASUS Ascent GX10 draws only **33-47W under load** — remarkably power-efficient for a 128GB unified memory AI supercomputer
 - All 12 configurations completed successfully, including **32B Q8_0** (34.8GB)
 - `Q4_K_M` was fastest across all tested sizes
+- 3B Q4_K_M achieves **94.4 tok/s** TG — well above human reading speed, ideal for real-time chat
+- 7B models run at **28-44 tok/s** — smooth interactive experience
+- 14B models at **14-23 tok/s** — usable for chat with higher quality
 - Power draw is relatively flat across model sizes thanks to the unified memory architecture
-- Electricity cost ranges from RM 0.22/M tokens (3B Q4) to RM 2.58/M tokens (32B Q8)
+- Electricity cost ranges from **RM 0.06/M tokens** (3B Q4) to **RM 1.03/M tokens** (32B Q8) — extremely affordable local inference
 
 ---
 
