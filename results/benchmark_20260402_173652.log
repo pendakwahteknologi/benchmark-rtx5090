@@ -1,0 +1,270 @@
+[INFO] Benchmark started at Thu Apr  2 17:36:54 UTC 2026
+[INFO] GPU: NVIDIA GeForce RTX 5090
+[INFO] CUDA: 12.8 | Driver: 570.153.02
+[INFO] CPU: AMD EPYC 7543 32-Core Processor
+[INFO] VRAM: 32607 MiB | System RAM: 944Gi
+
+================================================================================
+ MODEL 1/4: Qwen2.5-3B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:37:01Z","14104681","5658402","9941.079694","3238.371920"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:37:01Z","15213024","1677237","16956.871032","1757.619982"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:37:01Z","22143140","2146209","23260.240080","2135.008183"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:37:01Z","350634957","3814181","365.081001","3.996198"
+
+         PP 128 tokens -> 9941.079694 tok/s
+         PP 256 tokens -> 16956.871032 tok/s
+         PP 512 tokens -> 23260.240080 tok/s
+         TG 128 tokens -> 365.081001 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q4_K_M (8s)
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q5_K_M (2.3GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:37:08Z","17291908","9502715","8744.840443","3671.965469"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:37:08Z","16812411","3474748","15625.051129","2890.714239"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:37:09Z","22678958","1961304","22683.787307","1869.757292"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:37:09Z","380266023","1450798","336.609728","1.284591"
+
+         PP 128 tokens -> 8744.840443 tok/s
+         PP 256 tokens -> 15625.051129 tok/s
+         PP 512 tokens -> 22683.787307 tok/s
+         TG 128 tokens -> 336.609728 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q5_K_M (7s)
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q8_0 (3.4GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:37:19Z","16662526","8371963","8834.451626","3440.869130"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:37:19Z","15455716","1664262","16684.874344","1691.460895"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:37:19Z","23159309","2778334","22309.763315","2527.597175"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:37:19Z","433195546","2454940","295.484901","1.675940"
+
+         PP 128 tokens -> 8834.451626 tok/s
+         PP 256 tokens -> 16684.874344 tok/s
+         PP 512 tokens -> 22309.763315 tok/s
+         TG 128 tokens -> 295.484901 tok/s
+   [DONE] Qwen2.5-3B-Instruct-GGUF Q8_0 (11s)
+================================================================================
+ MODEL 2/4: Qwen2.5-7B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:37:32Z","20148637","10734174","7427.628090","3026.331503"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:37:32Z","22802859","2696580","11325.505974","1253.775929"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:37:32Z","36563392","2326973","14039.646892","861.924882"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:37:32Z","541326597","1355354","236.457132","0.592063"
+
+         PP 128 tokens -> 7427.628090 tok/s
+         PP 256 tokens -> 11325.505974 tok/s
+         PP 512 tokens -> 14039.646892 tok/s
+         TG 128 tokens -> 236.457132 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q4_K_M (13s)
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:37:47Z","16724457","4662588","8011.028150","1923.878832"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:37:47Z","22621218","2694117","11417.831203","1272.360235"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:37:47Z","36283392","1640669","14129.909853","622.673356"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:37:47Z","588334595","1382075","217.564072","0.510707"
+
+         PP 128 tokens -> 8011.028150 tok/s
+         PP 256 tokens -> 11417.831203 tok/s
+         PP 512 tokens -> 14129.909853 tok/s
+         TG 128 tokens -> 217.564072 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q5_K_M (14s)
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:38:08Z","17081976","4737576","7839.856069","1874.496977"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:38:09Z","22903747","3887010","11376.154982","1758.390836"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:38:09Z","35212133","2457946","14585.988435","978.735061"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:38:09Z","758508758","1618097","168.752682","0.359463"
+
+         PP 128 tokens -> 7839.856069 tok/s
+         PP 256 tokens -> 11376.154982 tok/s
+         PP 512 tokens -> 14585.988435 tok/s
+         TG 128 tokens -> 168.752682 tok/s
+   [DONE] Qwen2.5-7B-Instruct-GGUF Q8_0 (22s)
+================================================================================
+ MODEL 3/4: Qwen2.5-14B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:38:33Z","29796466","8149742","4489.172084","1060.431859"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:38:34Z","42202906","6943614","6167.612437","927.034441"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:38:34Z","66237947","2459519","7736.674381","281.423320"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:38:34Z","944429590","977504","135.531640","0.140274"
+
+         PP 128 tokens -> 4489.172084 tok/s
+         PP 256 tokens -> 6167.612437 tok/s
+         PP 512 tokens -> 7736.674381 tok/s
+         TG 128 tokens -> 135.531640 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q4_K_M (25s)
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:39:04Z","31439750","9364600","4287.742746","1090.174366"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:39:05Z","41018213","2718484","6258.793534","399.787993"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:39:05Z","68555300","2174297","7473.349011","232.970991"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:39:05Z","1049825355","2457923","121.925487","0.285389"
+
+         PP 128 tokens -> 4287.742746 tok/s
+         PP 256 tokens -> 6258.793534 tok/s
+         PP 512 tokens -> 7473.349011 tok/s
+         TG 128 tokens -> 121.925487 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q5_K_M (32s)
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:39:33Z","30790298","7378967","4301.847484","905.650099"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:39:33Z","39498783","2909719","6503.800948","459.969928"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:39:34Z","66436769","4338621","7727.760951","486.618074"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf","qwen2 14B Q8_0","15695630336","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:39:34Z","1390977571","2848047","92.021870","0.188514"
+
+         PP 128 tokens -> 4301.847484 tok/s
+         PP 256 tokens -> 6503.800948 tok/s
+         PP 512 tokens -> 7727.760951 tok/s
+         TG 128 tokens -> 92.021870 tok/s
+   [DONE] Qwen2.5-14B-Instruct-GGUF Q8_0 (30s)
+================================================================================
+ MODEL 4/4: Qwen2.5-32B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q4_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:40:31Z","53479312","11874380","2465.268711","485.189390"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:40:31Z","78814288","3815127","3253.088617","153.285806"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:40:32Z","142262940","2047355","3599.462579","51.380203"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf","qwen2 32B Q4_K - Medium","19845357568","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:40:32Z","1869931735","2025384","68.451750","0.074075"
+
+         PP 128 tokens -> 2465.268711 tok/s
+         PP 256 tokens -> 3253.088617 tok/s
+         PP 512 tokens -> 3599.462579 tok/s
+         TG 128 tokens -> 68.451750 tok/s
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q4_K_M (59s)
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q5_K_M (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","128","0","0","2026-04-02T17:41:38Z","54684649","11546004","2404.387179","452.504148"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","256","0","0","2026-04-02T17:41:38Z","83567349","6810021","3076.411104","239.546357"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","512","0","0","2026-04-02T17:41:38Z","148235241","2101548","3454.428777","48.597848"
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf","qwen2 32B Q5_K - Medium","23256178688","32763876352","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","128","0","2026-04-02T17:41:39Z","2120114078","2392369","60.374161","0.068058"
+
+         PP 128 tokens -> 2404.387179 tok/s
+         PP 256 tokens -> 3076.411104 tok/s
+         PP 512 tokens -> 3454.428777 tok/s
+         TG 128 tokens -> 60.374161 tok/s
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q5_K_M (68s)
+
+   [BENCH] Qwen2.5-32B-Instruct-GGUF Q8_0 (3.7GB)
+           PP lengths: 128,256,512 | TG: 128 | Reps: 3
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+main: error: failed to load model '/workspace/benchmark-rtx5090/models/qwen2.5-32b-instruct-q8_0-00001-of-00009.gguf'
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+
+   [DONE] Qwen2.5-32B-Instruct-GGUF Q8_0 (89s)
+
+================================================================================
+ BENCHMARK COMPLETE - Total time: 00:06:23
+================================================================================
+
+ NVIDIA GeForce RTX 5090 (Blackwell RTX 5090) | 32607 MiB VRAM | CUDA 12.8
+ llama.cpp (CUDA) | Flash Attention ON | All layers on GPU
+
+  PROMPT PROCESSING (tok/s)
+  -----------------------------------------------------------------------------------------------------------
+  Model                               Quant            PP 128       PP 256       PP 512
+  -----------------------------------------------------------------------------------------------------------
+  Qwen2.5-3B-Instruct-GGUF            Q4_K_M           9941.1      16956.9      23260.2
+  Qwen2.5-3B-Instruct-GGUF            Q5_K_M           8744.8      15625.1      22683.8
+  Qwen2.5-3B-Instruct-GGUF            Q8_0             8834.5      16684.9      22309.8
+  Qwen2.5-7B-Instruct-GGUF            Q4_K_M           7427.6      11325.5      14039.6
+  Qwen2.5-7B-Instruct-GGUF            Q5_K_M           8011.0      11417.8      14129.9
+  Qwen2.5-7B-Instruct-GGUF            Q8_0             7839.9      11376.2      14586.0
+  Qwen2.5-14B-Instruct-GGUF           Q4_K_M           4489.2       6167.6       7736.7
+  Qwen2.5-14B-Instruct-GGUF           Q5_K_M           4287.7       6258.8       7473.3
+  Qwen2.5-14B-Instruct-GGUF           Q8_0             4301.8       6503.8       7727.8
+  Qwen2.5-32B-Instruct-GGUF           Q4_K_M           2465.3       3253.1       3599.5
+  Qwen2.5-32B-Instruct-GGUF           Q5_K_M           2404.4       3076.4       3454.4
+  -----------------------------------------------------------------------------------------------------------
+
+  TEXT GENERATION (tok/s)
+  -----------------------------------------------------------------------------------------------------------
+  Model                               Quant            TG 128
+  -----------------------------------------------------------------------------------------------------------
+  Qwen2.5-3B-Instruct-GGUF            Q4_K_M            365.1
+  Qwen2.5-3B-Instruct-GGUF            Q5_K_M            336.6
+  Qwen2.5-3B-Instruct-GGUF            Q8_0              295.5
+  Qwen2.5-7B-Instruct-GGUF            Q4_K_M            236.5
+  Qwen2.5-7B-Instruct-GGUF            Q5_K_M            217.6
+  Qwen2.5-7B-Instruct-GGUF            Q8_0              168.8
+  Qwen2.5-14B-Instruct-GGUF           Q4_K_M            135.5
+  Qwen2.5-14B-Instruct-GGUF           Q5_K_M            121.9
+  Qwen2.5-14B-Instruct-GGUF           Q8_0               92.0
+  Qwen2.5-32B-Instruct-GGUF           Q4_K_M             68.5
+  Qwen2.5-32B-Instruct-GGUF           Q5_K_M             60.4
+  -----------------------------------------------------------------------------------------------------------
+
+  PEAK PROMPT PROCESSING:  23260.2 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
+  PEAK TEXT GENERATION:    365.1 tok/s  (Qwen2.5-3B-Instruct-GGUF Q4_K_M)
+
+================================================================================
+ Results saved to:
+   CSV:  /workspace/benchmark-rtx5090/results/benchmark_20260402_173652.csv
+   JSON: /workspace/benchmark-rtx5090/results/benchmark_20260402_173652.json
+   Log:  /workspace/benchmark-rtx5090/results/benchmark_20260402_173652.log
+================================================================================

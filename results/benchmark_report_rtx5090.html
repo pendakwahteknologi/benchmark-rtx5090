@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA RTX 5090 — Qwen2.5 GGUF Benchmark Report</title>
+    <style>
+        :root {
+            --primary: #0f3460;
+            --primary-light: #1a4a80;
+            --accent: #76b900;
+            --accent-dark: #5a9000;
+            --bg-dark: #0a0f1a;
+            --bg-gradient: linear-gradient(135deg, #0a0f1a 0%, #0f1f3a 50%, #0f3460 100%);
+            --card-bg: #ffffff;
+            --card-border: #e8ecf1;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --q4-color: #3b82f6;
+            --q5-color: #10b981;
+            --q8-color: #f59e0b;
+            --q4-bg: #dbeafe;
+            --q5-bg: #d1fae5;
+            --q8-bg: #fef3c7;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 60px rgba(0,0,0,0.25);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-wrapper {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #0f1f3a 0%, #0f3460 40%, #1a4a80 100%);
+            border-radius: var(--radius-lg);
+            padding: 48px 48px 40px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(118,185,0,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+        }
+
+        .header-device {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-date {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85em;
+        }
+
+        .header h1 {
+            font-size: 2.4em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 1.15em;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 20px;
+        }
+
+        .header-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-gpu {
+            background: rgba(118,185,0,0.2);
+            border: 1px solid rgba(118,185,0,0.4);
+            color: #a8e060;
+        }
+
+        .badge-info {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.8);
+        }
+
+        .badge-runs {
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.4);
+            color: #93c5fd;
+        }
+
+        /* ── Navigation ── */
+        .nav {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 5px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 12px;
+            z-index: 100;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 0.88em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover { background: #f0f4f8; color: var(--primary); }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(15,52,96,0.3);
+        }
+
+        /* ── Panels ── */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .card-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-subtitle {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .card-body { padding: 24px; }
+
+        /* ── Stat Grid ── */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-card.accent-green::before { background: var(--accent); }
+        .stat-card.accent-blue::before { background: var(--q4-color); }
+        .stat-card.accent-amber::before { background: var(--q8-color); }
+        .stat-card.accent-teal::before { background: #14b8a6; }
+        .stat-card.accent-purple::before { background: #8b5cf6; }
+        .stat-card.accent-rose::before { background: #f43f5e; }
+
+        .stat-label {
+            font-size: 0.78em;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .stat-unit {
+            font-size: 0.4em;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .stat-detail {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ── Info Box ── */
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid var(--q4-color);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 24px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .info-box strong { color: var(--primary); }
+
+        /* ── Tables ── */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        thead th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 11px 16px;
+            border-bottom: 1px solid #f0f3f6;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover { background: #f8fafc; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        .cell-value {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .cell-best {
+            color: var(--accent-dark);
+            position: relative;
+        }
+
+        .quant-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.82em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .qb-q4 { background: var(--q4-bg); color: #1d4ed8; }
+        .qb-q5 { background: var(--q5-bg); color: #047857; }
+        .qb-q8 { background: var(--q8-bg); color: #b45309; }
+
+        /* ── Charts ── */
+        .chart-wrap {
+            background: #f8fafc;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #eef2f6;
+        }
+
+        .chart-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 260px;
+            padding: 10px 0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 80px;
+        }
+
+        .bar-group-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .chart-bar {
+            width: 32px;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+            min-height: 2px;
+        }
+
+        .chart-bar:hover {
+            filter: brightness(1.15);
+            transform: scaleY(1.02);
+            transform-origin: bottom;
+        }
+
+        .chart-bar .tip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-dark);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.78em;
+            font-weight: 600;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .chart-bar .tip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--bg-dark);
+        }
+
+        .chart-bar:hover .tip { display: block; }
+
+        .bar-label {
+            font-size: 0.82em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82em;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        /* ── Horizontal bar chart ── */
+        .hbar-chart { margin: 16px 0; }
+
+        .hbar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .hbar-label {
+            width: 160px;
+            font-size: 0.82em;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .hbar-track {
+            flex: 1;
+            height: 28px;
+            background: #eef2f6;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hbar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 0.78em;
+            font-weight: 700;
+            color: white;
+            min-width: 60px;
+            transition: width 0.5s ease;
+        }
+
+        .hbar-value {
+            width: 90px;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: right;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ── Two-column layout ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ── Specs grid ── */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f3f6;
+        }
+
+        .spec-row:last-child { border-bottom: none; }
+        .spec-key { color: var(--text-muted); font-size: 0.88em; }
+        .spec-val { font-weight: 700; color: var(--text-primary); font-size: 0.88em; }
+
+        /* ── Run comparison ── */
+        .run-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 700;
+        }
+
+        .run-latest { background: #dcfce7; color: #166534; }
+        .run-older { background: #f1f5f9; color: #475569; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.82em;
+        }
+
+        .footer a { color: rgba(255,255,255,0.6); text-decoration: none; }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .page-wrapper { padding: 12px; }
+            .header { padding: 28px 24px; }
+            .header h1 { font-size: 1.6em; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .grid-2 { grid-template-columns: 1fr; }
+            .specs-grid { grid-template-columns: 1fr; }
+            .bar-chart { gap: 6px; height: 200px; }
+            .chart-bar { width: 22px; }
+            .nav-btn { min-width: 90px; font-size: 0.8em; padding: 10px 8px; }
+        }
+
+        @media (max-width: 600px) {
+            .stat-grid { grid-template-columns: 1fr; }
+            .header-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+        }
+
+        /* ── Print ── */
+        @media print {
+            body { background: white; }
+            .nav { display: none; }
+            .panel { display: block !important; page-break-inside: avoid; }
+            .header { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <div class="header-logo">RTX</div>
+                <div>
+                    <div class="header-device">NVIDIA GeForce RTX 5090</div>
+                </div>
+            </div>
+            <div class="header-date">2026-04-02 18:07:50</div>
+        </div>
+        <h1>Qwen2.5 GGUF Benchmark Report</h1>
+        <div class="header-subtitle">llama.cpp inference performance &mdash; NVIDIA GeForce RTX 5090 CUDA</div>
+        <div class="header-badges">
+            <span class="badge badge-gpu">NVIDIA GeForce RTX 5090</span>
+            <span class="badge badge-info">Blackwell (RTX 5090)</span>
+            <span class="badge badge-info">32607 MiB VRAM</span>
+            <span class="badge badge-info">CUDA 12.8</span>
+            <span class="badge badge-runs">1 benchmark runs &bull; 2 power runs</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav" id="nav">
+        <button class="nav-btn active" onclick="switchTab('overview',this)">Overview</button>
+        <button class="nav-btn" onclick="switchTab('pp',this)">Prompt Processing</button>
+        <button class="nav-btn" onclick="switchTab('tg',this)">Text Generation</button>
+        <button class="nav-btn" onclick="switchTab('power',this)">Power &amp; Efficiency</button>
+        <button class="nav-btn" onclick="switchTab('runs',this)">Run History</button>
+        <button class="nav-btn" onclick="switchTab('raw',this)">Raw Data</button>
+    </div>
+
+    <!-- ════════════ OVERVIEW ════════════ -->
+    <div id="overview" class="panel active">
+        <div class="stat-grid" id="ov-stats"></div>
+
+        <div class="grid-2">
+            <div class="chart-wrap" id="ov-tg-chart"></div>
+            <div class="chart-wrap" id="ov-pp-chart"></div>
+        </div>
+
+        <div class="grid-2" id="ov-efficiency-row" style="display:none;">
+            <div class="chart-wrap" id="ov-tpw-chart"></div>
+            <div class="chart-wrap" id="ov-cost-chart"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">System Specifications</div>
+                <div class="card-subtitle">Hardware and software configuration</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="specs-grid" id="sys-specs"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ PROMPT PROCESSING ════════════ -->
+    <div id="pp" class="panel">
+        <div class="info-box">
+            <strong>Prompt Processing (PP)</strong> measures how fast the model ingests the input prompt.
+            Higher tok/s = faster time-to-first-token. Tested at 128, 256, and 512 token prompt lengths.
+            Values shown are <strong>best across 1 runs</strong>.
+        </div>
+        <div class="stat-grid" id="pp-stats"></div>
+        <div class="chart-wrap" id="pp-chart-128"></div>
+        <div class="chart-wrap" id="pp-chart-256"></div>
+        <div class="chart-wrap" id="pp-chart-512"></div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Prompt Processing &mdash; Detailed Results</div>
+                <div class="card-subtitle">Best observed values across all benchmark runs (tok/s)</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="pp-table"><thead><tr>
+                        <th>Model</th><th>Quant</th><th>PP 128</th><th>PP 256</th><th>PP 512</th>
+                    </tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ TEXT GENERATION ════════════ -->
+    <div id="tg" class="panel">
+        <div class="info-box">
+            <strong>Text Generation (TG)</strong> measures how fast the model produces output tokens.
+            Higher tok/s = faster responses. This is the primary speed metric for interactive use.
+            Tested at 128 output tokens. Values shown are <strong>best across 1 runs</strong>.
+        </div>
+        <div class="stat-grid" id="tg-stats"></div>
+        <div class="chart-wrap" id="tg-chart-detail"></div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Text Generation &mdash; Detailed Results</div>
+                <div class="card-subtitle">Best observed values across all benchmark runs (tok/s)</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="tg-table"><thead><tr>
+                        <th>Model</th><th>Quant</th><th>TG 128 (tok/s)</th><th>Usability</th>
+                    </tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ POWER & EFFICIENCY ════════════ -->
+    <div id="power" class="panel">
+        <div class="info-box">
+            <strong>Power Efficiency</strong> measures energy consumption during text generation (512 tokens).
+            Metrics include tokens-per-watt, energy cost, and average GPU power draw.
+            Electricity cost calculated at <strong>0.55 MYR/kWh</strong>.
+        </div>
+        <div class="stat-grid" id="pw-stats"></div>
+        <div class="grid-2">
+            <div class="chart-wrap" id="pw-tpw-chart"></div>
+            <div class="chart-wrap" id="pw-power-chart"></div>
+        </div>
+        <div class="chart-wrap" id="pw-cost-hbar"></div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Power Efficiency &mdash; Full Results</div>
+                <div class="card-subtitle">Latest token-per-watt benchmark data</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="pw-table"><thead><tr>
+                        <th>Model</th><th>Quant</th><th>TG tok/s</th><th>Avg Power (W)</th><th>Tokens/Watt</th><th>J/Token</th><th>kWh/1M tok</th><th>RM/1M tok</th>
+                    </tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ RUN HISTORY ════════════ -->
+    <div id="runs" class="panel">
+        <div class="info-box">
+            <strong>Run History</strong> compares performance across all benchmark sessions.
+            This helps identify variance, warm-up effects, and consistency.
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Benchmark Runs Summary</div>
+                <div class="card-subtitle">Performance overview per run</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="runs-table"><thead><tr>
+                        <th>Run</th><th>Timestamp</th><th>Data Points</th><th>Peak PP (tok/s)</th><th>Peak TG (tok/s)</th><th>Status</th>
+                    </tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:20px;">
+            <div class="card-header">
+                <div class="card-title">Run-by-Run TG Comparison &mdash; 3B Q4_K_M</div>
+                <div class="card-subtitle">Fastest config tracked across runs to show consistency</div>
+            </div>
+            <div class="card-body">
+                <div class="chart-wrap" id="run-compare-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════ RAW DATA ════════════ -->
+    <div id="raw" class="panel">
+        <div class="info-box">
+            Complete benchmark data from llama-bench. Best values across <strong>1 runs</strong>
+            (3 repetitions each). All values are tok/s.
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Complete Benchmark Data</div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <div class="table-wrapper">
+                    <table id="raw-table"><thead><tr>
+                        <th>Model</th><th>Quant</th><th>Type</th><th>Tokens</th><th>Speed (tok/s)</th><th>Source Run</th>
+                    </tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>Generated 2026-04-02 18:07:50 &bull; NVIDIA GeForce RTX 5090 &bull; Blackwell (RTX 5090) &bull; 32607 MiB VRAM &bull; CUDA 12.8 &bull; llama.cpp (CUDA)</p>
+    <p style="margin-top:4px;">NVIDIA GeForce RTX 5090 &mdash; AI Benchmark Suite</p>
+</div>
+
+<script>
+// ── Data ──
+var bestData = [{"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "9941.079694", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "16956.871032", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "23260.240080", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "365.081001", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "8744.840443", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "15625.051129", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "22683.787307", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "336.609728", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "8834.451626", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "16684.874344", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "22309.763315", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "295.484901", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "7427.628090", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "11325.505974", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "14039.646892", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "236.457132", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "8011.028150", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "11417.831203", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "14129.909853", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "217.564072", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "7839.856069", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "11376.154982", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "14585.988435", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "168.752682", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "4489.172084", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "6167.612437", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "7736.674381", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "135.531640", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "4287.742746", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "6258.793534", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "7473.349011", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "121.925487", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "4301.847484", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "6503.800948", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "7727.760951", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "92.021870", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "2465.268711", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "3253.088617", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "3599.462579", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "68.451750", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "2404.387179", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "3076.411104", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "3454.428777", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "60.374161", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}];
+var avgData = [{"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "9941.079694", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "16956.871032", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "23260.24008", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "365.081001", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "8744.840443", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "15625.051129", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "22683.787307", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "336.609728", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "8834.451626", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "16684.874344", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "22309.763315", "tg_tok_sec": "0.0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "295.484901", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "7427.62809", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "11325.505974", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "14039.646892", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "236.457132", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "8011.02815", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "11417.831203", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "14129.909853", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "217.564072", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "7839.856069", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "11376.154982", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "14585.988435", "tg_tok_sec": "0.0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "168.752682", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "4489.172084", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "6167.612437", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "7736.674381", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "135.53164", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "4287.742746", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "6258.793534", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "7473.349011", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "121.925487", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "4301.847484", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "6503.800948", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "7727.760951", "tg_tok_sec": "0.0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "92.02187", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "2465.268711", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "3253.088617", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "3599.462579", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "68.45175", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "128", "tg_tokens": "0", "pp_tok_sec": "2404.387179", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "256", "tg_tokens": "0", "pp_tok_sec": "3076.411104", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "512", "tg_tokens": "0", "pp_tok_sec": "3454.428777", "tg_tok_sec": "0.0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "0", "tg_tokens": "128", "pp_tok_sec": "0.0", "tg_tok_sec": "60.374161", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}];
+var tpwData = [{"model_size": "3B", "quant": "Q4_K_M", "tg_tokens": "512", "tg_tok_sec": "363.116588", "avg_power_w": "245.792000", "min_power_w": "12.490000", "max_power_w": "387.500000", "power_samples": "20", "tokens_per_watt": "1.477333", "joules_per_token": "0.676896", "sec_per_1k_tokens": "2.753936", "wh_per_1k_tokens": "0.188027", "kwh_per_1m_tokens": "0.188027", "rm_per_1k_tokens": "0.000103", "rm_per_1m_tokens": "0.103415", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "bench_seconds": "11"}, {"model_size": "3B", "quant": "Q5_K_M", "tg_tokens": "512", "tg_tok_sec": "307.736183", "avg_power_w": "298.049500", "min_power_w": "83.210000", "max_power_w": "398.040000", "power_samples": "20", "tokens_per_watt": "1.032500", "joules_per_token": "0.968523", "sec_per_1k_tokens": "3.249537", "wh_per_1k_tokens": "0.269034", "kwh_per_1m_tokens": "0.269034", "rm_per_1k_tokens": "0.000148", "rm_per_1m_tokens": "0.147969", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "bench_seconds": "11"}, {"model_size": "3B", "quant": "Q8_0", "tg_tokens": "512", "tg_tok_sec": "59.551020", "avg_power_w": "314.985517", "min_power_w": "273.920000", "max_power_w": "445.170000", "power_samples": "87", "tokens_per_watt": "0.189060", "joules_per_token": "5.289339", "sec_per_1k_tokens": "16.792324", "wh_per_1k_tokens": "1.469261", "kwh_per_1m_tokens": "1.469261", "rm_per_1k_tokens": "0.000808", "rm_per_1m_tokens": "0.808094", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "bench_seconds": "49"}, {"model_size": "7B", "quant": "Q4_K_M", "tg_tokens": "512", "tg_tok_sec": "209.208776", "avg_power_w": "411.680000", "min_power_w": "295.830000", "max_power_w": "505.000000", "power_samples": "37", "tokens_per_watt": "0.508183", "joules_per_token": "1.967795", "sec_per_1k_tokens": "4.779914", "wh_per_1k_tokens": "0.546610", "kwh_per_1m_tokens": "0.546610", "rm_per_1k_tokens": "0.000301", "rm_per_1m_tokens": "0.300636", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "bench_seconds": "21"}, {"model_size": "7B", "quant": "Q5_K_M", "tg_tokens": "512", "tg_tok_sec": "222.737371", "avg_power_w": "386.203571", "min_power_w": "66.030000", "max_power_w": "510.070000", "power_samples": "28", "tokens_per_watt": "0.576736", "joules_per_token": "1.733897", "sec_per_1k_tokens": "4.489592", "wh_per_1k_tokens": "0.481638", "kwh_per_1m_tokens": "0.481638", "rm_per_1k_tokens": "0.000265", "rm_per_1m_tokens": "0.264901", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "bench_seconds": "15"}, {"model_size": "7B", "quant": "Q8_0", "tg_tokens": "512", "tg_tok_sec": "174.288333", "avg_power_w": "279.252889", "min_power_w": "58.630000", "max_power_w": "443.650000", "power_samples": "45", "tokens_per_watt": "0.624124", "joules_per_token": "1.602247", "sec_per_1k_tokens": "5.737619", "wh_per_1k_tokens": "0.445069", "kwh_per_1m_tokens": "0.445069", "rm_per_1k_tokens": "0.000245", "rm_per_1m_tokens": "0.244788", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "bench_seconds": "25"}, {"model_size": "14B", "quant": "Q4_K_M", "tg_tokens": "512", "tg_tok_sec": "133.412275", "avg_power_w": "430.062500", "min_power_w": "71.780000", "max_power_w": "537.650000", "power_samples": "44", "tokens_per_watt": "0.310216", "joules_per_token": "3.223560", "sec_per_1k_tokens": "7.495562", "wh_per_1k_tokens": "0.895433", "kwh_per_1m_tokens": "0.895433", "rm_per_1k_tokens": "0.000492", "rm_per_1m_tokens": "0.492488", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "bench_seconds": "25"}, {"model_size": "14B", "quant": "Q5_K_M", "tg_tokens": "512", "tg_tok_sec": "121.054049", "avg_power_w": "442.309184", "min_power_w": "71.000000", "max_power_w": "550.330000", "power_samples": "49", "tokens_per_watt": "0.273686", "joules_per_token": "3.653816", "sec_per_1k_tokens": "8.260773", "wh_per_1k_tokens": "1.014949", "kwh_per_1m_tokens": "1.014949", "rm_per_1k_tokens": "0.000558", "rm_per_1m_tokens": "0.558222", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "bench_seconds": "27"}, {"model_size": "14B", "quant": "Q8_0", "tg_tokens": "512", "tg_tok_sec": "91.767171", "avg_power_w": "375.681231", "min_power_w": "64.350000", "max_power_w": "499.490000", "power_samples": "65", "tokens_per_watt": "0.244269", "joules_per_token": "4.093852", "sec_per_1k_tokens": "10.897143", "wh_per_1k_tokens": "1.137181", "kwh_per_1m_tokens": "1.137181", "rm_per_1k_tokens": "0.000625", "rm_per_1m_tokens": "0.625450", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "bench_seconds": "36"}, {"model_size": "32B", "quant": "Q4_K_M", "tg_tokens": "512", "tg_tok_sec": "67.587150", "avg_power_w": "302.164388", "min_power_w": "17.210000", "max_power_w": "566.370000", "power_samples": "139", "tokens_per_watt": "0.223677", "joules_per_token": "4.470737", "sec_per_1k_tokens": "14.795712", "wh_per_1k_tokens": "1.241871", "kwh_per_1m_tokens": "1.241871", "rm_per_1k_tokens": "0.000683", "rm_per_1m_tokens": "0.683029", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "bench_seconds": "77"}, {"model_size": "32B", "quant": "Q5_K_M", "tg_tokens": "512", "tg_tok_sec": "59.592514", "avg_power_w": "171.941005", "min_power_w": "13.120000", "max_power_w": "553.400000", "power_samples": "219", "tokens_per_watt": "0.346587", "joules_per_token": "2.885279", "sec_per_1k_tokens": "16.780631", "wh_per_1k_tokens": "0.801466", "kwh_per_1m_tokens": "0.801466", "rm_per_1k_tokens": "0.000441", "rm_per_1m_tokens": "0.440806", "electricity_cost_myr_per_kwh": "0.55", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "bench_seconds": "146"}];
+var runsMeta = [{"timestamp": "20260402_173652", "file": "benchmark_20260402_173652.csv"}];
+var allRunsData = [[{"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "9941.079694", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "16956.871032", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "23260.240080", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "365.081001", "model_file": "qwen2.5-3b-instruct-q4_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "8744.840443", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "15625.051129", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "22683.787307", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "336.609728", "model_file": "qwen2.5-3b-instruct-q5_k_m.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "8834.451626", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "16684.874344", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "22309.763315", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "3B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "295.484901", "model_file": "qwen2.5-3b-instruct-q8_0.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "7427.628090", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "11325.505974", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "14039.646892", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "236.457132", "model_file": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "8011.028150", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "11417.831203", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "14129.909853", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "217.564072", "model_file": "qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "7839.856069", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "11376.154982", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "14585.988435", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "7B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "168.752682", "model_file": "qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "4489.172084", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "6167.612437", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "7736.674381", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "135.531640", "model_file": "qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "4287.742746", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "6258.793534", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "7473.349011", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "121.925487", "model_file": "qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "128", "pp_tok_sec": "4301.847484", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "256", "pp_tok_sec": "6503.800948", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "512", "pp_tok_sec": "7727.760951", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "14B", "quant": "Q8_0", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "92.021870", "model_file": "qwen2.5-14b-instruct-q8_0-00001-of-00004.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "128", "pp_tok_sec": "2465.268711", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "256", "pp_tok_sec": "3253.088617", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "512", "pp_tok_sec": "3599.462579", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q4_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "68.451750", "model_file": "qwen2.5-32b-instruct-q4_k_m-00001-of-00005.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "128", "pp_tok_sec": "2404.387179", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "256", "pp_tok_sec": "3076.411104", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "512", "pp_tok_sec": "3454.428777", "tg_tokens": "0", "tg_tok_sec": "0", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}, {"model_size": "32B", "quant": "Q5_K_M", "pp_tokens": "0", "pp_tok_sec": "0", "tg_tokens": "128", "tg_tok_sec": "60.374161", "model_file": "qwen2.5-32b-instruct-q5_k_m-00001-of-00006.gguf", "vram_used_mb": "0"}]];
+
+// ── Helpers ──
+var models = ['3B', '7B', '14B', '32B'];
+var quants = ['Q4_K_M', 'Q5_K_M', 'Q8_0'];
+var ppLens = [128, 256, 512];
+var qColors = { 'Q4_K_M': '#3b82f6', 'Q5_K_M': '#10b981', 'Q8_0': '#f59e0b' };
+
+function switchTab(id, btn) {
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+}
+
+function qClass(q) {
+    if (q.indexOf('Q4') >= 0) return 'qb-q4';
+    if (q.indexOf('Q5') >= 0) return 'qb-q5';
+    return 'qb-q8';
+}
+
+function qBadge(q) {
+    return '<span class="quant-badge ' + qClass(q) + '">' + q + '</span>';
+}
+
+function fmt(v, d) { return Number(v).toFixed(d === undefined ? 1 : d); }
+
+function usabilityLabel(tg) {
+    if (tg >= 30) return '<span style="color:#059669;font-weight:700">Excellent</span>';
+    if (tg >= 15) return '<span style="color:#2563eb;font-weight:700">Good</span>';
+    if (tg >= 8) return '<span style="color:#d97706;font-weight:700">Usable</span>';
+    return '<span style="color:#dc2626;font-weight:700">Slow</span>';
+}
+
+// ── Parse benchmark data ──
+var ppData = {};
+var tgData = {};
+bestData.forEach(function(r) {
+    var key = r.model_size + '_' + r.quant;
+    if (parseInt(r.pp_tokens) > 0) {
+        if (!ppData[key]) ppData[key] = {};
+        ppData[key][parseInt(r.pp_tokens)] = parseFloat(r.pp_tok_sec);
+    }
+    if (parseInt(r.tg_tokens) > 0) {
+        tgData[key] = parseFloat(r.tg_tok_sec);
+    }
+});
+
+// ── Peak values ──
+var allTG = []; var allPP = [];
+Object.keys(tgData).forEach(function(k) { if (tgData[k] > 0) allTG.push(tgData[k]); });
+Object.keys(ppData).forEach(function(k) {
+    Object.keys(ppData[k]).forEach(function(p) { if (ppData[k][p] > 0) allPP.push(ppData[k][p]); });
+});
+var peakTG = allTG.length ? Math.max.apply(null, allTG) : 0;
+var peakPP = allPP.length ? Math.max.apply(null, allPP) : 0;
+
+// ── Chart builder ──
+function makeBarChart(containerId, title, chartData, maxVal, unit) {
+    var c = document.getElementById(containerId);
+    if (!c || !chartData.length) return;
+    if (!maxVal) maxVal = Math.max.apply(null, chartData.map(function(d) {
+        return d.values.length ? Math.max.apply(null, d.values) : 0;
+    })) * 1.15;
+    if (!unit) unit = 'tok/s';
+
+    var html = '<div class="chart-title">' + title + '</div>';
+    html += '<div class="bar-chart">';
+    chartData.forEach(function(g) {
+        html += '<div class="bar-group"><div class="bar-group-bars">';
+        g.values.forEach(function(v, i) {
+            var h = Math.max(2, (v / maxVal) * 230);
+            var col = qColors[g.quants[i]] || '#999';
+            html += '<div class="chart-bar" style="height:' + h + 'px;background:' + col + '">';
+            html += '<div class="tip">' + g.quants[i] + ': ' + fmt(v) + ' ' + unit + '</div></div>';
+        });
+        html += '</div><div class="bar-label">' + g.label + '</div></div>';
+    });
+    html += '</div>';
+    html += '<div class="legend">';
+    quants.forEach(function(q) {
+        html += '<div class="legend-item"><div class="legend-dot" style="background:' + qColors[q] + '"></div>' + q + '</div>';
+    });
+    html += '</div>';
+    c.innerHTML = html;
+}
+
+function buildChartData(mode, ppLen) {
+    return models.map(function(m) {
+        var vals = []; var qs = [];
+        quants.forEach(function(q) {
+            if (mode === 'tg') {
+                var v = tgData[m + '_' + q];
+                if (v && v > 0) { vals.push(v); qs.push(q); }
+            } else {
+                var d = ppData[m + '_' + q];
+                if (d && d[ppLen]) { vals.push(d[ppLen]); qs.push(q); }
+            }
+        });
+        return { label: 'Qwen2.5-' + m, values: vals, quants: qs };
+    }).filter(function(d) { return d.values.length > 0; });
+}
+
+// ── Stat card builder ──
+function addStat(container, label, value, unit, detail, accent) {
+    var html = '<div class="stat-card ' + (accent || 'accent-green') + '">';
+    html += '<div class="stat-label">' + label + '</div>';
+    html += '<div class="stat-value">' + value + '<span class="stat-unit">' + (unit || '') + '</span></div>';
+    if (detail) html += '<div class="stat-detail">' + detail + '</div>';
+    html += '</div>';
+    container.innerHTML += html;
+}
+
+// ── Horizontal bar chart ──
+function makeHBar(containerId, title, items, maxVal, unit, colorFn) {
+    var c = document.getElementById(containerId);
+    if (!c || !items.length) return;
+    if (!maxVal) maxVal = Math.max.apply(null, items.map(function(i) { return i.value; })) * 1.05;
+
+    var html = '<div class="chart-title">' + title + '</div><div class="hbar-chart">';
+    items.forEach(function(item) {
+        var pct = Math.max(1, (item.value / maxVal) * 100);
+        var col = colorFn ? colorFn(item) : (qColors[item.quant] || '#999');
+        html += '<div class="hbar-row">';
+        html += '<div class="hbar-label">' + item.label + '</div>';
+        html += '<div class="hbar-track"><div class="hbar-fill" style="width:' + pct + '%;background:' + col + '">' + fmt(item.value, item.decimals !== undefined ? item.decimals : 1) + '</div></div>';
+        html += '<div class="hbar-value">' + fmt(item.value, item.decimals !== undefined ? item.decimals : 1) + ' ' + (unit || '') + '</div>';
+        html += '</div>';
+    });
+    html += '</div>';
+    c.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════
+var ovStats = document.getElementById('ov-stats');
+addStat(ovStats, 'Peak Text Generation', fmt(peakTG), ' tok/s', '3B Q4_K_M', 'accent-green');
+addStat(ovStats, 'Peak Prompt Processing', fmt(peakPP), ' tok/s', '3B Q4_K_M @ 512 tokens', 'accent-blue');
+addStat(ovStats, 'Models Tested', models.length, '', 'Qwen2.5 3B / 7B / 14B / 32B', 'accent-amber');
+addStat(ovStats, 'Configurations', bestData.length, '', models.length + ' models x ' + quants.length + ' quants x ' + (ppLens.length + 1) + ' tests', 'accent-teal');
+addStat(ovStats, 'Benchmark Runs', runsMeta.length, '', 'Best values selected', 'accent-purple');
+
+if (tpwData.length > 0) {
+    var bestTPW = Math.max.apply(null, tpwData.map(function(r) { return parseFloat(r.tokens_per_watt); }));
+    addStat(ovStats, 'Best Efficiency', fmt(bestTPW, 2), ' tok/W', '3B Q4_K_M', 'accent-rose');
+}
+
+makeBarChart('ov-tg-chart', 'Text Generation — 128 tokens output', buildChartData('tg'));
+makeBarChart('ov-pp-chart', 'Prompt Processing — 512 tokens input', buildChartData('pp', 512));
+
+// TPW overview charts
+if (tpwData.length > 0) {
+    document.getElementById('ov-efficiency-row').style.display = 'grid';
+
+    var tpwChartData = models.map(function(m) {
+        var vals = []; var qs = [];
+        quants.forEach(function(q) {
+            tpwData.forEach(function(r) {
+                if (r.model_size === m && r.quant === q) {
+                    vals.push(parseFloat(r.tokens_per_watt));
+                    qs.push(q);
+                }
+            });
+        });
+        return { label: 'Qwen2.5-' + m, values: vals, quants: qs };
+    }).filter(function(d) { return d.values.length > 0; });
+
+    makeBarChart('ov-tpw-chart', 'Energy Efficiency — Tokens per Watt', tpwChartData, null, 'tok/W');
+
+    var costItems = [];
+    tpwData.forEach(function(r) {
+        costItems.push({
+            label: r.model_size + ' ' + r.quant,
+            value: parseFloat(r.rm_per_1m_tokens),
+            quant: r.quant,
+            decimals: 2
+        });
+    });
+    costItems.sort(function(a, b) { return a.value - b.value; });
+    makeHBar('ov-cost-chart', 'Electricity Cost per 1M Tokens (MYR)', costItems, null, 'RM', function(i) { return qColors[i.quant]; });
+}
+
+// System specs
+var specsContainer = document.getElementById('sys-specs');
+var specs = [
+    ['GPU', 'NVIDIA GeForce RTX 5090'], ['Architecture', 'Blackwell (RTX 5090)'],
+    ['VRAM', '32607 MiB'], ['System RAM', '944Gi'], ['CUDA Version', '12.8'],
+    ['Driver', '570.153.02'], ['CPU', 'AMD EPYC 7543 32-Core Processor'],
+    ['Backend', 'llama.cpp (CUDA)'], ['Flash Attention', 'Enabled'],
+    ['GPU Layers', 'All offloaded (ngl=99)'], ['Repetitions', '3 per config per run']
+];
+specs.forEach(function(s) {
+    var row = document.createElement('div');
+    row.className = 'spec-row';
+    row.innerHTML = '<span class="spec-key">' + s[0] + '</span><span class="spec-val">' + s[1] + '</span>';
+    specsContainer.appendChild(row);
+});
+
+// ══════════════════════════════════════
+// PROMPT PROCESSING
+// ══════════════════════════════════════
+var ppStats = document.getElementById('pp-stats');
+ppLens.forEach(function(len) {
+    var best = 0;
+    Object.keys(ppData).forEach(function(k) { if (ppData[k][len] > best) best = ppData[k][len]; });
+    addStat(ppStats, 'Peak PP ' + len, fmt(best), ' tok/s', '', 'accent-blue');
+});
+
+ppLens.forEach(function(len) {
+    makeBarChart('pp-chart-' + len, 'Prompt Processing — ' + len + ' tokens input', buildChartData('pp', len));
+});
+
+var ppTbody = document.querySelector('#pp-table tbody');
+models.forEach(function(m) {
+    quants.forEach(function(q) {
+        var d = ppData[m + '_' + q];
+        if (!d) return;
+        var row = '<tr>';
+        row += '<td>Qwen2.5-' + m + '</td>';
+        row += '<td>' + qBadge(q) + '</td>';
+        ppLens.forEach(function(len) {
+            var v = d[len];
+            row += '<td class="cell-value">' + (v ? fmt(v) : '—') + '</td>';
+        });
+        row += '</tr>';
+        ppTbody.innerHTML += row;
+    });
+});
+
+// ══════════════════════════════════════
+// TEXT GENERATION
+// ══════════════════════════════════════
+var tgStats = document.getElementById('tg-stats');
+var fastestTG = ''; var slowestTG = ''; var fastVal = 0; var slowVal = Infinity;
+Object.keys(tgData).forEach(function(k) {
+    if (tgData[k] > fastVal) { fastVal = tgData[k]; fastestTG = k; }
+    if (tgData[k] < slowVal && tgData[k] > 0) { slowVal = tgData[k]; slowestTG = k; }
+});
+addStat(tgStats, 'Fastest', fmt(fastVal), ' tok/s', fastestTG.replace('_', ' '), 'accent-green');
+addStat(tgStats, 'Slowest', fmt(slowVal), ' tok/s', slowestTG.replace('_', ' '), 'accent-amber');
+var interactive = 0;
+Object.keys(tgData).forEach(function(k) { if (tgData[k] >= 15) interactive++; });
+addStat(tgStats, 'Interactive (>15 tok/s)', interactive + '/' + Object.keys(tgData).length, '', 'Configs suitable for chat', 'accent-blue');
+
+makeBarChart('tg-chart-detail', 'Text Generation — 128 tokens output', buildChartData('tg'));
+
+var tgTbody = document.querySelector('#tg-table tbody');
+models.forEach(function(m) {
+    quants.forEach(function(q) {
+        var v = tgData[m + '_' + q];
+        if (v === undefined) return;
+        var row = '<tr>';
+        row += '<td>Qwen2.5-' + m + '</td>';
+        row += '<td>' + qBadge(q) + '</td>';
+        row += '<td class="cell-value">' + fmt(v) + '</td>';
+        row += '<td>' + usabilityLabel(v) + '</td>';
+        row += '</tr>';
+        tgTbody.innerHTML += row;
+    });
+});
+
+// ══════════════════════════════════════
+// POWER & EFFICIENCY
+// ══════════════════════════════════════
+if (tpwData.length > 0) {
+    var pwStats = document.getElementById('pw-stats');
+    var bestEfficiency = 0; var avgPower = 0; var lowestCost = Infinity; var bestEffModel = '';
+    tpwData.forEach(function(r) {
+        var tpw = parseFloat(r.tokens_per_watt);
+        avgPower += parseFloat(r.avg_power_w);
+        if (tpw > bestEfficiency) { bestEfficiency = tpw; bestEffModel = r.model_size + ' ' + r.quant; }
+        var cost = parseFloat(r.rm_per_1m_tokens);
+        if (cost < lowestCost) lowestCost = cost;
+    });
+    avgPower /= tpwData.length;
+
+    addStat(pwStats, 'Best Efficiency', fmt(bestEfficiency, 2), ' tok/W', bestEffModel, 'accent-green');
+    addStat(pwStats, 'Avg GPU Power Draw', fmt(avgPower, 1), ' W', 'Across all configs', 'accent-amber');
+    addStat(pwStats, 'Cheapest per 1M Tokens', 'RM ' + fmt(lowestCost, 2), '', 'At 0.55 MYR/kWh', 'accent-blue');
+    addStat(pwStats, 'Configs Tested', tpwData.length, '', '512 token generation', 'accent-teal');
+
+    // TPW bar chart
+    var tpwItems = models.map(function(m) {
+        var vals = []; var qs = [];
+        quants.forEach(function(q) {
+            tpwData.forEach(function(r) {
+                if (r.model_size === m && r.quant === q) {
+                    vals.push(parseFloat(r.tokens_per_watt));
+                    qs.push(q);
+                }
+            });
+        });
+        return { label: 'Qwen2.5-' + m, values: vals, quants: qs };
+    }).filter(function(d) { return d.values.length > 0; });
+    makeBarChart('pw-tpw-chart', 'Tokens per Watt', tpwItems, null, 'tok/W');
+
+    // Power draw chart
+    var powerItems = models.map(function(m) {
+        var vals = []; var qs = [];
+        quants.forEach(function(q) {
+            tpwData.forEach(function(r) {
+                if (r.model_size === m && r.quant === q) {
+                    vals.push(parseFloat(r.avg_power_w));
+                    qs.push(q);
+                }
+            });
+        });
+        return { label: 'Qwen2.5-' + m, values: vals, quants: qs };
+    }).filter(function(d) { return d.values.length > 0; });
+    makeBarChart('pw-power-chart', 'Average Power Draw (Watts)', powerItems, null, 'W');
+
+    // Cost horizontal bar
+    var costBarItems = [];
+    tpwData.forEach(function(r) {
+        costBarItems.push({
+            label: r.model_size + ' ' + r.quant,
+            value: parseFloat(r.rm_per_1m_tokens),
+            quant: r.quant,
+            decimals: 2
+        });
+    });
+    costBarItems.sort(function(a, b) { return a.value - b.value; });
+    makeHBar('pw-cost-hbar', 'Electricity Cost — RM per 1M Tokens (lower is better)', costBarItems, null, 'RM', function(i) { return qColors[i.quant]; });
+
+    // Power table
+    var pwTbody = document.querySelector('#pw-table tbody');
+    tpwData.forEach(function(r) {
+        var row = '<tr>';
+        row += '<td>Qwen2.5-' + r.model_size + '</td>';
+        row += '<td>' + qBadge(r.quant) + '</td>';
+        row += '<td class="cell-value">' + fmt(r.tg_tok_sec) + '</td>';
+        row += '<td>' + fmt(r.avg_power_w) + '</td>';
+        row += '<td class="cell-value">' + fmt(r.tokens_per_watt, 2) + '</td>';
+        row += '<td>' + fmt(r.joules_per_token, 2) + '</td>';
+        row += '<td>' + fmt(r.kwh_per_1m_tokens, 3) + '</td>';
+        row += '<td class="cell-value">' + fmt(r.rm_per_1m_tokens, 2) + '</td>';
+        row += '</tr>';
+        pwTbody.innerHTML += row;
+    });
+}
+
+// ══════════════════════════════════════
+// RUN HISTORY
+// ══════════════════════════════════════
+var runsTbody = document.querySelector('#runs-table tbody');
+runsMeta.forEach(function(run, i) {
+    var isLatest = (i === runsMeta.length - 1);
+    var peakPPr = 0; var peakTGr = 0;
+    allRunsData[i].forEach(function(r) {
+        var pp = parseFloat(r.pp_tok_sec); if (pp > peakPPr) peakPPr = pp;
+        var tg = parseFloat(r.tg_tok_sec); if (tg > peakTGr) peakTGr = tg;
+    });
+    var ts = run.timestamp;
+    var display = ts.substring(0,4) + '-' + ts.substring(4,6) + '-' + ts.substring(6,8) + ' ' + ts.substring(9,11) + ':' + ts.substring(11,13);
+    var tag = isLatest ? '<span class="run-tag run-latest">Latest</span>' : '<span class="run-tag run-older">Run ' + (i+1) + '</span>';
+    var row = '<tr>';
+    row += '<td>' + tag + '</td>';
+    row += '<td>' + display + '</td>';
+    row += '<td>' + allRunsData[i].length + '</td>';
+    row += '<td class="cell-value">' + fmt(peakPPr) + '</td>';
+    row += '<td class="cell-value">' + fmt(peakTGr) + '</td>';
+    row += '<td>' + (allRunsData[i].length >= 48 ? 'Complete' : 'Partial (' + allRunsData[i].length + '/48)') + '</td>';
+    row += '</tr>';
+    runsTbody.innerHTML += row;
+});
+
+// Run comparison chart: track 3B Q4_K_M TG across runs
+var runCompareData = [];
+allRunsData.forEach(function(runRows, i) {
+    var tgVal = 0;
+    runRows.forEach(function(r) {
+        if (r.model_size === '3B' && r.quant === 'Q4_K_M' && parseInt(r.tg_tokens) > 0) {
+            tgVal = parseFloat(r.tg_tok_sec);
+        }
+    });
+    if (tgVal > 0) {
+        var ts = runsMeta[i].timestamp;
+        runCompareData.push({
+            label: 'Run ' + (i+1),
+            values: [tgVal],
+            quants: ['Q4_K_M']
+        });
+    }
+});
+if (runCompareData.length > 0) {
+    makeBarChart('run-compare-chart', '3B Q4_K_M — Text Generation across runs (tok/s)', runCompareData);
+}
+
+// ══════════════════════════════════════
+// RAW DATA
+// ══════════════════════════════════════
+var rawTbody = document.querySelector('#raw-table tbody');
+bestData.forEach(function(r) {
+    var isPP = parseInt(r.pp_tokens) > 0;
+    var row = '<tr>';
+    row += '<td>Qwen2.5-' + r.model_size + '</td>';
+    row += '<td>' + qBadge(r.quant) + '</td>';
+    row += '<td>' + (isPP ? 'Prompt Processing' : 'Text Generation') + '</td>';
+    row += '<td>' + (isPP ? r.pp_tokens : r.tg_tokens) + '</td>';
+    row += '<td class="cell-value">' + fmt(isPP ? r.pp_tok_sec : r.tg_tok_sec) + '</td>';
+    row += '<td>Best of ' + runsMeta.length + ' runs</td>';
+    row += '</tr>';
+    rawTbody.innerHTML += row;
+});
+</script>
+</body>
+</html>

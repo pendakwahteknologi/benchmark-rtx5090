@@ -1,0 +1,132 @@
+[INFO] Token-per-watt benchmark started at Thu Apr  2 17:44:20 UTC 2026
+[INFO] GPU: NVIDIA GeForce RTX 5090 | CUDA: 12.8 | Driver: 570.153.02
+[INFO] Config: TG_LENGTH=512, N_REPS=5, POWER_SAMPLE_INTERVAL_SEC=0.5, GPU_INDEX=0
+
+================================================================================
+ MODEL 1/4: Qwen2.5-3B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q4_K_M (2.0GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q4_k_m.gguf","qwen2 3B Q4_K - Medium","2098976768","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:44:28Z","1400943311","19528169","365.524318","5.047399"
+
+         TG 512 tokens -> 365.524318 tok/s
+         Avg Power -> 180.849310W (samples=29)
+         Efficiency -> 2.021154 tok/W | 0.494767 J/token
+         Cost -> 0.000076 RM per 1k tokens | 0.075589 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q5_K_M (2.3GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q5_k_m.gguf","qwen2 3B Q5_K - Medium","2432784384","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:44:43Z","1490452885","8598897","343.528857","1.973436"
+
+         TG 512 tokens -> 343.528857 tok/s
+         Avg Power -> 215.116667W (samples=27)
+         Efficiency -> 1.596942 tok/W | 0.626197 J/token
+         Cost -> 0.000096 RM per 1k tokens | 0.095669 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-3B-Instruct-GGUF Q8_0 (3.4GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-3b-instruct-q8_0.gguf","qwen2 3B Q8_0","3610132480","3397103616","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:45:04Z","1749481858","8827548","292.664034","1.475365"
+
+         TG 512 tokens -> 292.664034 tok/s
+         Avg Power -> 171.079487W (samples=39)
+         Efficiency -> 1.710690 tok/W | 0.584559 J/token
+         Cost -> 0.000089 RM per 1k tokens | 0.089308 RM per 1M tokens
+
+================================================================================
+ MODEL 2/4: Qwen2.5-7B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q4_K_M (3.7GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf","qwen2 7B Q4_K - Medium","4677120000","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:45:24Z","2069416778","3215928","247.413181","0.384282"
+
+         TG 512 tokens -> 247.413181 tok/s
+         Avg Power -> 260.651250W (samples=40)
+         Efficiency -> 0.949212 tok/W | 1.053506 J/token
+         Cost -> 0.000161 RM per 1k tokens | 0.160953 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q5_K_M (3.7GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q5_k_m-00001-of-00002.gguf","qwen2 7B Q5_K - Medium","5438877696","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:45:47Z","2327461094","3405489","219.982571","0.321416"
+
+         TG 512 tokens -> 219.982571 tok/s
+         Avg Power -> 263.012955W (samples=44)
+         Efficiency -> 0.836394 tok/W | 1.195608 J/token
+         Cost -> 0.000183 RM per 1k tokens | 0.182662 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-7B-Instruct-GGUF Q8_0 (3.7GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-7b-instruct-q8_0-00001-of-00003.gguf","qwen2 7B Q8_0","8092571648","7615616512","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:46:17Z","2951509240","3726282","173.470794","0.218772"
+
+         TG 512 tokens -> 173.470794 tok/s
+         Avg Power -> 227.031207W (samples=58)
+         Efficiency -> 0.764083 tok/W | 1.308758 J/token
+         Cost -> 0.000200 RM per 1k tokens | 0.199949 RM per 1M tokens
+
+================================================================================
+ MODEL 3/4: Qwen2.5-14B-Instruct-GGUF
+================================================================================
+
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q4_K_M (3.7GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q4_k_m-00001-of-00003.gguf","qwen2 14B Q4_K - Medium","8982142976","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:46:52Z","3824052755","11201850","133.890285","0.391845"
+
+         TG 512 tokens -> 133.890285 tok/s
+         Avg Power -> 284.096389W (samples=72)
+         Efficiency -> 0.471285 tok/W | 2.121860 J/token
+         Cost -> 0.000324 RM per 1k tokens | 0.324173 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q5_K_M (3.7GB)
+           TG: 512 tokens | Reps: 5
+
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 32120 MiB):
+  Device 0: NVIDIA GeForce RTX 5090, compute capability 12.0, VMM: yes, VRAM: 32120 MiB
+build_commit,build_number,cpu_info,gpu_info,backends,model_filename,model_type,model_size,model_n_params,n_batch,n_ubatch,n_threads,cpu_mask,cpu_strict,poll,type_k,type_v,n_gpu_layers,n_cpu_moe,split_mode,main_gpu,no_kv_offload,flash_attn,devices,tensor_split,tensor_buft_overrides,use_mmap,use_direct_io,embeddings,no_op_offload,no_host,n_prompt,n_gen,n_depth,test_time,avg_ns,stddev_ns,avg_ts,stddev_ts
+"5803c8d","1","AMD EPYC 7543 32-Core Processor","NVIDIA GeForce RTX 5090","CUDA","/workspace/benchmark-rtx5090/models/qwen2.5-14b-instruct-q5_k_m-00001-of-00003.gguf","qwen2 14B Q5_K - Medium","10502905856","14770033664","2048","512","120","0x0","0","50","f16","f16","99","0","layer","0","0","1","auto","0.00","none","1","0","0","0","0","0","512","0","2026-04-02T17:47:37Z","4246641740","25077013","120.569211","0.709936"
+
+         TG 512 tokens -> 120.569211 tok/s
+         Avg Power -> 271.796588W (samples=85)
+         Efficiency -> 0.443601 tok/W | 2.254279 J/token
+         Cost -> 0.000344 RM per 1k tokens | 0.344404 RM per 1M tokens
+
+
+   [BENCH] Qwen2.5-14B-Instruct-GGUF Q8_0 (3.7GB)
+           TG: 512 tokens | Reps: 5
+

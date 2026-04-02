@@ -1,0 +1,17 @@
+{
+  "metadata": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "arch": "Blackwell (RTX 5090)",
+    "vram_gb": "32",
+    "memory_type": "Discrete (32GB VRAM + 944Gi System RAM)",
+    "cuda_version": "12.8",
+    "driver_version": "570.153.02",
+    "cpu": "AMD EPYC 7543 32-Core Processor",
+    "backend": "llama.cpp (CUDA)",
+    "timestamp": "2026-04-02T17:36:54+00:00",
+    "pp_lengths": "128,256,512",
+    "tg_length": 128,
+    "repetitions": 3
+  },
+  "results": []
+}
