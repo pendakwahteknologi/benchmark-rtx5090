@@ -2,8 +2,6 @@
 
 Comprehensive benchmarking suite for testing Qwen2.5 language models (3B, 7B, 14B, 32B) across multiple quantization levels on NVIDIA's Blackwell GB10 GPU using CUDA and llama.cpp.
 
-Adapted from the [AMD Radeon AI PRO R9700 benchmark suite](https://github.com/pendakwahteknologi/benchmark-rocm).
-
 ---
 
 ## Table of Contents
@@ -19,8 +17,6 @@ Adapted from the [AMD Radeon AI PRO R9700 benchmark suite](https://github.com/pe
 - [Troubleshooting](#troubleshooting)
 - [Advanced Usage](#advanced-usage)
 - [Measured Results (2026-04-02)](#measured-results-2026-04-02)
-- [GX10 vs R9700 Comparison](#gx10-vs-r9700-comparison)
-
 ---
 
 ## Overview
@@ -30,7 +26,7 @@ This benchmark suite measures **inference performance** of Qwen2.5 language mode
 1. **Process input prompts** (Prompt Processing / PP) - How quickly the model reads and understands your input
 2. **Generate output tokens** (Text Generation / TG) - How quickly the model writes responses
 
-The GB10 has **128GB unified memory** shared between CPU and GPU, meaning **all model sizes and quantizations fit** — including 32B Q8_0 which exceeds the 32GB VRAM limit of discrete GPU setups.
+The GB10 has **128GB unified memory** shared between CPU and GPU, meaning **all model sizes and quantizations fit** — including 32B Q8_0 (~34.8GB).
 
 The suite automatically:
 - Downloads models from Hugging Face (or uses pre-downloaded models)
@@ -128,7 +124,7 @@ We test 4 model sizes from the Qwen2.5-Instruct family:
 | **Q5_K_M** | 5-bit | Medium (~2.3GB for 3B) | Better | Fast |
 | **Q8_0** | 8-bit | Largest (~3.4GB for 3B) | Best | Slower |
 
-**Note**: Unlike the R9700 (32GB VRAM), the GB10's 128GB unified memory fits **all** quantizations for **all** model sizes, including 32B Q8_0 (~34.8GB).
+**Note**: The GB10's 128GB unified memory fits **all** quantizations for **all** model sizes, including 32B Q8_0 (~34.8GB).
 
 ### Test Types
 
@@ -255,14 +251,7 @@ benchmark-gx10/
 ├── scripts/
 │   ├── run_benchmark_gx10.sh             # Main benchmark (CUDA)
 │   ├── run_token_per_watt_gx10.sh        # Power efficiency benchmark (nvidia-smi)
-│   ├── generate_report_gx10.py           # HTML report generator
-│   ├── run_benchmark.sh                  # Original R9700 benchmark (ROCm)
-│   ├── run_benchmark_background.sh       # Original background runner
-│   ├── run_interactive_bench.sh          # Original interactive testing
-│   ├── run_token_per_watt_benchmark.sh   # Original power benchmark (rocm-smi)
-│   ├── show_token_per_watt_results.sh    # CLI table viewer
-│   ├── check_benchmark.sh               # Status checker
-│   └── generate_report.py               # Original HTML report generator
+│   └── generate_report_gx10.py           # HTML report generator
 ├── docs/                        # Documentation and reports
 └── README.md
 ```
@@ -535,55 +524,6 @@ MODEL_SIZES_CSV=3B N_REPS=2 TG_LENGTH=256 bash scripts/run_token_per_watt_gx10.s
 
 ---
 
-## GX10 vs R9700 Comparison
-
-Side-by-side comparison between the two benchmark machines:
-
-### Hardware
-
-| Spec | GX10 (GB10) | R9700 (RDNA4) |
-|------|-------------|---------------|
-| **GPU** | NVIDIA GB10 (Blackwell) | ASUS TURBO Radeon AI PRO R9700 |
-| **Memory** | 128 GB Unified | 32 GB GDDR6 |
-| **CPU** | ARM Cortex-X925 + A725 (20 cores) | Intel Core Ultra 7 265K (20 cores) |
-| **RAM** | 128 GB (shared) | 46 GB DDR5 |
-| **Compute** | CUDA 13.0 | ROCm 7.2 |
-| **Power (GPU)** | ~55-63W | up to 300W |
-| **PCIe** | Integrated (SoC) | Gen4 x16 |
-
-### Text Generation (TG 128 tok/s)
-
-| Model | GX10 | R9700 | R9700 / GX10 |
-|-------|-----:|------:|-------------:|
-| 3B Q4_K_M | 44.1 | 143.4 | 3.3x faster |
-| 7B Q4_K_M | 20.8 | 103.7 | 5.0x faster |
-| 14B Q4_K_M | 11.9 | 55.0 | 4.6x faster |
-| 32B Q4_K_M | 5.4 | 26.8 | 5.0x faster |
-| 32B Q8_0 | 3.4 | N/A | GX10 only |
-
-### Prompt Processing (PP 512 tok/s)
-
-| Model | GX10 | R9700 | R9700 / GX10 |
-|-------|-----:|------:|-------------:|
-| 3B Q4_K_M | 3674.1 | 8124.8 | 2.2x faster |
-| 7B Q4_K_M | 951.8 | 4006.1 | 4.2x faster |
-| 14B Q4_K_M | 918.6 | 2007.7 | 2.2x faster |
-| 32B Q4_K_M | 397.7 | 901.6 | 2.3x faster |
-
-### Summary
-
-| Category | Winner | Notes |
-|----------|--------|-------|
-| **Raw Speed** | R9700 | 2-5x faster across all sizes |
-| **Memory Capacity** | GX10 | 128GB unified vs 32GB discrete |
-| **32B Q8_0 Support** | GX10 | R9700 cannot fit 34.8GB model |
-| **Power Efficiency** | GX10 | ~60W vs up to 300W |
-| **Form Factor** | GX10 | Compact SoC vs desktop GPU |
-
-The R9700 is the clear winner for raw inference speed, while the GX10 excels in power efficiency and can run larger models that don't fit in 32GB VRAM.
-
----
-
 ## Performance Interpretation
 
 ### What's "Good" Performance?
@@ -636,7 +576,6 @@ All 12 configurations fit in the GB10's 128GB unified memory.
 ## Citation & Credits
 
 **GPU**: NVIDIA GB10 (Blackwell, Project DIGITS)
-**Original Benchmark**: [pendakwahteknologi/benchmark-rocm](https://github.com/pendakwahteknologi/benchmark-rocm) (AMD R9700 / ROCm)
 **Models**: Qwen2.5-Instruct by Alibaba Cloud (Hugging Face: Qwen/Qwen2.5-{SIZE}-Instruct-GGUF)
 **Inference Engine**: llama.cpp by ggerganov (CUDA backend)
 **Compute Platform**: CUDA 13.0 by NVIDIA
